@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bohemio Academy Pro - Casilleros Mentales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .card-container { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo, useEffect } = React;
+
+        // Configuración de la API de Gemini (Se inyecta en tiempo de ejecución)
+        const apiKey = ""; 
+
+        // Base de datos completa optimizada de tus archivos
+        const DATABASE = [
+            { n: 0, l: "R", w: "ARO" }, { n: 1, l: "T, D", w: "HADA" }, { n: 2, l: "N", w: "NOE" },
+            { n: 3, l: "M", w: "HUMO" }, { n: 4, l: "C, K, Q", w: "K.O." }, { n: 5, l: "L", w: "ALA" },
+            { n: 6, l: "S, Z", w: "AS" }, { n: 7, l: "F", w: "UFO" }, { n: 8, l: "CH, J, G", w: "HACHA" },
+            { n: 9, l: "V, B, P", w: "AVE" }, { n: 10, l: "TR", w: "TORO" }, { n: 11, l: "TT", w: "TETA" },
+            { n: 12, l: "TN", w: "TUNO" }, { n: 13, l: "TM", w: "TIMO" }, { n: 14, l: "TC", w: "TACO" },
+            { n: 15, l: "TL", w: "TELA" }, { n: 16, l: "TZ", w: "TAZA" }, { n: 17, l: "TF", w: "TUFO" },
+            { n: 18, l: "TCH", w: "TECHO" }, { n: 19, l: "TP", w: "TAPA" }, { n: 20, l: "NR", w: "NORIA" },
+            { n: 21, l: "ND", w: "NIDO" }, { n: 22, l: "NÑ", w: "NIÑA" }, { n: 23, l: "NM", w: "NEMO" },
+            { n: 24, l: "NC", w: "NUCA" }, { n: 25, l: "NL", w: "NILO" }, { n: 26, l: "NS", w: "NASA" },
+            { n: 27, l: "NF", w: "NIFE" }, { n: 28, l: "NCH", w: "NICHO" }, { n: 29, l: "NB", w: "NUBE" },
+            { n: 30, l: "MR", w: "MAR" }, { n: 31, l: "MT", w: "MOTO" }, { n: 32, l: "MN", w: "MINA" },
+            { n: 33, l: "MM", w: "MAMA" }, { n: 34, l: "MC", w: "MOCO" }, { n: 40, l: "CR", w: "CURA" },
+            { n: 41, l: "CT", w: "CATA" }, { n: 42, l: "CN", w: "CANA" }, { n: 43, l: "CM", w: "CAMA" },
+            { n: 44, l: "CC", w: "COCO" }, { n: 50, l: "LR", w: "LORO" }, { n: 51, l: "LT", w: "LATA" },
+            { n: 52, l: "LN", w: "LUNA" }, { n: 53, l: "LM", w: "LIMA" }, { n: 54, l: "LC", w: "LACA" },
+            { n: 60, l: "SR", w: "SOR" }, { n: 61, l: "ST", w: "SETA" }, { n: 62, l: "SN", w: "SENA" },
+            { n: 63, l: "SM", w: "SUMA" }
+        ];
+
+        const App = () => {
+            const [view, setView] = useState('gallery');
+            const [images, setImages] = useState({});
+            const [loading, setLoading] = useState(false);
+            const [search, setSearch] = useState('');
+            const [trainIdx, setTrainIdx] = useState(0);
+            const [flipped, setFlipped] = useState(false);
+            const [stats, setStats] = useState({ ok: 0, total: 0 });
+
+            const generateImage = async (word, id) => {
+                if (loading) return;
+                setLoading(true);
+                try {
+                    // DIRECTRIZ CAMPAYO: Exageración, acción, color, absurdo.
+                    const prompt = `A surreal, bizarre, and highly exaggerated 3D mnemonic illustration of "${word}". Incredible proportions, vibrant cinematic colors, dynamic movement, weird perspective, isolated on white background. Mnemonic art style. The object should look shocking or funny.`;
+
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            instances: [{ prompt: prompt }],
+                            parameters: { sampleCount: 1 }
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.predictions?.[0]) {
+                        setImages(prev => ({ ...prev, [id]: `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}` }));
+                    }
+                } catch (e) {
+                    console.error("Error Generando Imagen:", e);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const filtered = useMemo(() => 
+                DATABASE.filter(i => i.n.toString().includes(search) || i.w.toLowerCase().includes(search.toLowerCase()))
+            , [search]);
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Header */}
+                    <header className="bg-indigo-900 text-white p-4 shadow-xl sticky top-0 z-50">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white p-2 rounded-xl">
+                                    <i data-lucide="brain" class="text-indigo-900 w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h1 className="font-black text-xl tracking-tighter uppercase">Bohemio Academy <span className="text-indigo-400">Pro</span></h1>
+                                    <p className="text-[10px] font-bold tracking-[0.3em] opacity-70">METODO CAMPAYO + AI</p>
+                                </div>
+                            </div>
+                            
+                            <nav className="flex bg-indigo-950 p-1 rounded-xl border border-indigo-800">
+                                <button onClick={() => setView('gallery')} className={`px-6 py-2 rounded-lg text-xs font-black transition-all ${view === 'gallery' ? 'bg-indigo-600 text-white' : 'text-indigo-300 hover:text-white'}`}>GALERÍA</button>
+                                <button onClick={() => setView('train')} className={`px-6 py-2 rounded-lg text-xs font-black transition-all ${view === 'train' ? 'bg-indigo-600 text-white' : 'text-indigo-300 hover:text-white'}`}>ENTRENAR</button>
+                            </nav>
+                        </div>
+                    </header>
+
+                    {/* Main */}
+                    <main className="flex-grow max-w-6xl mx-auto w-full p-4 md:p-8">
+                        {view === 'gallery' ? (
+                            <div className="space-y-8 animate-in fade-in duration-700">
+                                <div className="relative group">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <i data-lucide="search" className="w-5 h-5"></i>
+                                    </div>
+                                    <input 
+                                        className="w-full pl-12 pr-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-200 outline-none focus:ring-4 focus:ring-indigo-100 text-lg font-bold transition-all" 
+                                        placeholder="Busca un número o palabra (ej: 22)..."
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                                    {filtered.map(item => (
+                                        <div key={item.n} className="bg-white rounded-[2rem] p-3 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-400 transition-all group relative overflow-hidden">
+                                            <div className="aspect-square bg-slate-50 rounded-2xl mb-4 relative flex items-center justify-center overflow-hidden border border-slate-50 shadow-inner">
+                                                {images[item.n] ? (
+                                                    <img src={images[item.n]} className="w-full h-full object-cover animate-in zoom-in-95 duration-500" alt={item.w} />
+                                                ) : (
+                                                    <i data-lucide="image" className="text-slate-200 w-12 h-12"></i>
+                                                )}
+                                                <div className="absolute top-0 left-0 bg-slate-900 text-white text-[12px] font-black px-3 py-1 rounded-br-2xl">{item.n}</div>
+                                                <button 
+                                                    onClick={() => generateImage(item.w, item.n)}
+                                                    className="absolute inset-0 bg-indigo-900/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2"
+                                                >
+                                                    <i data-lucide="sparkles" className="text-white w-6 h-6"></i>
+                                                    <span className="text-white text-[10px] font-black uppercase tracking-widest text-center px-4">Crear Imagen Campayo</span>
+                                                </button>
+                                            </div>
+                                            <div className="text-center">
+                                                <h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">{item.w}</h3>
+                                                <p className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-50 inline-block px-2 py-0.5 rounded-full mt-1">{item.l}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="max-w-md mx-auto py-4 animate-in zoom-in-95 duration-500">
+                                <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm border">
+                                    <div className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase italic">
+                                        <i data-lucide="zap" className="w-4 h-4 fill-indigo-600"></i> Kaizen Training
+                                    </div>
+                                    <div className="text-sm font-black text-slate-400">
+                                        Puntos: <span className="text-indigo-600 ml-1">{stats.ok}/{stats.total}</span>
+                                    </div>
+                                </div>
+
+                                <div className="w-full aspect-[3/4] perspective-1000">
+                                    <div 
+                                        className={`relative w-full h-full card-container transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`}
+                                        onClick={() => !flipped && setFlipped(true)}
+                                    >
+                                        {/* Front */}
+                                        <div className="absolute inset-0 bg-indigo-600 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[12px] border-indigo-500">
+                                            <span className="text-[10rem] font-black leading-none drop-shadow-2xl">{DATABASE[trainIdx % DATABASE.length].n}</span>
+                                            <p className="mt-8 text-indigo-200 text-xs font-black uppercase tracking-[0.4em] opacity-50">Visualiza la imagen</p>
+                                        </div>
+                                        
+                                        {/* Back */}
+                                        <div className="absolute inset-0 bg-white rounded-[3rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-8 border-4 border-indigo-600">
+                                            <div className="w-full aspect-square bg-slate-50 rounded-3xl mb-8 overflow-hidden flex items-center justify-center border-2 border-slate-100 shadow-inner">
+                                                {images[DATABASE[trainIdx % DATABASE.length].n] ? (
+                                                    <img src={images[DATABASE[trainIdx % DATABASE.length].n]} className="w-full h-full object-cover" alt="mnemonic" />
+                                                ) : (
+                                                    <div className="text-center px-4">
+                                                        <i data-lucide="image" className="text-slate-100 w-16 h-16 mx-auto mb-4"></i>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Usa la biblioteca para generar la imagen primero</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h2 className="text-5xl font-black uppercase text-indigo-900 tracking-tighter">{DATABASE[trainIdx % DATABASE.length].w}</h2>
+                                            <p className="text-xl font-mono text-slate-400 mt-2 font-bold">{DATABASE[trainIdx % DATABASE.length].l}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {flipped && (
+                                    <div className="grid grid-cols-2 gap-4 mt-8 animate-in slide-in-from-bottom-4 duration-500">
+                                        <button 
+                                            onClick={() => { setStats(s => ({...s, total: s.total+1})); setFlipped(false); setTrainIdx(p => (p+1)%DATABASE.length); }}
+                                            className="py-5 bg-white text-slate-400 font-black rounded-3xl border-2 border-slate-100 uppercase text-xs hover:bg-slate-50 shadow-sm"
+                                        >
+                                            Repasar
+                                        </button>
+                                        <button 
+                                            onClick={() => { setStats(s => ({...s, ok: s.ok+1, total: s.total+1})); setFlipped(false); setTrainIdx(p => (p+1)%DATABASE.length); }}
+                                            className="py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all uppercase text-xs flex items-center justify-center gap-2"
+                                        >
+                                            <i data-lucide="check-circle" className="w-5 h-5"></i> ¡Dominado!
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-white border-t border-slate-200 p-6 text-center">
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                            "Si es normal, se olvida. Si es raro, es eterno" — Ramón Campayo
+                        </p>
+                    </footer>
+
+                    {/* Cargador de IA */}
+                    {loading && (
+                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-4 z-[100] border border-slate-700">
+                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-400 w-5 h-5"></i>
+                            <span className="text-xs font-black uppercase tracking-widest">IA Esculpiendo imagen absurda...</span>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Renderizado e Inicialización de Iconos
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+
+        // Re-iniciar Lucide cada vez que el DOM cambie (aproximación simple)
+        setInterval(() => {
+            if (window.lucide) window.lucide.createIcons();
+        }, 1000);
+    </script>
+</body>
+</html>
