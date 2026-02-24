@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bohemio Academy Pro - Banco de Activos Mentales</title>
+    <title>Bohemio Academy - Casillero Maestro 0-99</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
@@ -19,62 +19,141 @@
         .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-[#f0f2f5] text-slate-900">
+<body class="bg-slate-50">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // BASE DE DATOS MAESTRA 0-99 (Sistema Fonético Campayo)
+        // DATABASE MAESTRA CON ENLACES YA CREADOS (TRABAJO TERMINADO)
         const DATABASE = [
-            { n: 0, l: "R", w: "ARO" }, { n: 1, l: "T, D", w: "HADA" }, { n: 2, l: "N", w: "NOE" }, { n: 3, l: "M", w: "HUMO" }, { n: 4, l: "C, K, Q", w: "K.O." }, { n: 5, l: "L", w: "ALA" }, { n: 6, l: "S, Z", w: "AS" }, { n: 7, l: "F", w: "UFO" }, { n: 8, l: "CH, J, G", w: "HACHA" }, { n: 9, l: "V, B, P", w: "AVE" },
-            { n: 10, l: "TR", w: "TORO" }, { n: 11, l: "TT", w: "TETA" }, { n: 12, l: "TN", w: "TUNO" }, { n: 13, l: "TM", w: "TIMO" }, { n: 14, l: "TC", w: "TACO" }, { n: 15, l: "TL", w: "TELA" }, { n: 16, l: "TZ", w: "TAZA" }, { n: 17, l: "TF", w: "TUFO" }, { n: 18, l: "TCH", w: "TECHO" }, { n: 19, l: "TP", w: "TAPA" },
-            { n: 20, l: "NR", w: "NORIA" }, { n: 21, l: "ND", w: "NIDO" }, { n: 22, l: "NÑ", w: "NIÑA" }, { n: 23, l: "NM", w: "NEMO" }, { n: 24, l: "NC", w: "NUCA" }, { n: 25, l: "NL", w: "NILO" }, { n: 26, l: "NS", w: "NASA" }, { n: 27, l: "NF", w: "NIFE" }, { n: 28, l: "NCH", w: "NICHO" }, { n: 29, l: "NB", w: "NUBE" },
-            { n: 30, l: "MR", w: "MAR" }, { n: 31, l: "MT", w: "MOTO" }, { n: 32, l: "MN", w: "MINA" }, { n: 33, l: "MM", w: "MAMA" }, { n: 34, l: "MC", w: "MOCO" }, { n: 35, l: "ML", w: "MULA" }, { n: 36, l: "MS", w: "MESA" }, { n: 37, l: "MF", w: "MAFIA" }, { n: 38, l: "MCH", w: "MECHA" }, { n: 39, l: "MP", w: "MAPA" },
-            { n: 40, l: "CR", w: "CURA" }, { n: 41, l: "CT", w: "CATA" }, { n: 42, l: "CN", w: "CANA" }, { n: 43, l: "CM", w: "CAMA" }, { n: 44, l: "CC", w: "COCO" }, { n: 45, l: "CL", w: "COLA" }, { n: 46, l: "CS", w: "CASA" }, { n: 47, l: "CF", w: "CAFE" }, { n: 48, l: "CCH", w: "COCHE" }, { n: 49, l: "CB", w: "CUBA" },
-            { n: 50, l: "LR", w: "LORO" }, { n: 51, l: "LT", w: "LATA" }, { n: 52, l: "LN", w: "LUNA" }, { n: 53, l: "LM", w: "LIMA" }, { n: 54, l: "LC", w: "LACA" }, { n: 55, l: "LL", w: "LULU" }, { n: 56, l: "LS", w: "LOSA" }, { n: 57, l: "LF", w: "ALFA" }, { n: 58, l: "LCH", w: "LUCHO" }, { n: 59, l: "LB", w: "LOBA" },
-            { n: 60, l: "SR", w: "SOR" }, { n: 61, l: "ST", w: "SETA" }, { n: 62, l: "SN", w: "SENA" }, { n: 63, l: "SM", w: "SUMA" }, { n: 64, l: "SC", w: "SACO" }, { n: 65, l: "SL", w: "SOLA" }, { n: 66, l: "SS", w: "SESO" }, { n: 67, l: "SF", w: "SOFA" }, { n: 68, l: "SCH", w: "SOJA" }, { n: 69, l: "SB", w: "SAPO" },
-            { n: 70, l: "FR", w: "FARO" }, { n: 71, l: "FT", w: "FOTO" }, { n: 72, l: "FN", w: "FAUNA" }, { n: 73, l: "FM", w: "FAMA" }, { n: 74, l: "FC", w: "FOCA" }, { n: 75, l: "FL", w: "FILA" }, { n: 76, l: "FS", w: "FOSA" }, { n: 77, l: "FF", w: "FOFO" }, { n: 78, l: "FCH", w: "FICHA" }, { n: 79, l: "FB", w: "FABA" },
-            { n: 80, l: "CHR", w: "CHORRO" }, { n: 81, l: "CHT", w: "CHATA" }, { n: 82, l: "CHN", w: "CHINA" }, { n: 83, l: "CHM", w: "CHAMA" }, { n: 84, l: "CHC", w: "CHICA" }, { n: 85, l: "CHL", w: "CHULO" }, { n: 86, l: "CHS", w: "CHAS" }, { n: 87, l: "CHF", w: "CHUFA" }, { n: 88, l: "CHCH", w: "CHUCHO" }, { n: 89, l: "CHB", w: "CHIVO" },
-            { n: 90, l: "BR/PR", w: "BARRA" }, { n: 91, l: "BT", w: "BOTA" }, { n: 92, l: "VN", w: "VINO" }, { n: 93, l: "PM", w: "PUMA" }, { n: 94, l: "VC", w: "VACA" }, { n: 95, l: "VL", w: "VELA" }, { n: 96, l: "VS", w: "VASO" }, { n: 97, l: "VF", w: "VIFA" }, { n: 98, l: "BCH", w: "BACHE" }, { n: 99, l: "PP", w: "PIPA" }
+            { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego que atraviesa un elefante rosa con tutú." },
+            { n: 1, l: "T, D", w: "HADA", s: "Un HADA minúscula que golpea con su varita un yunque y sale dinamita." },
+            { n: 2, l: "N", w: "NOE", s: "NOE metiendo un tiranosaurio Rex en un barquito de papel." },
+            { n: 3, l: "M", w: "HUMO", s: "HUMO de colores que al subir forma una mano que te saluda." },
+            { n: 4, l: "C, K, Q", w: "K.O.", s: "Un boxeador canguro que deja K.O. a un robot gigante." },
+            { n: 5, l: "L", w: "ALA", s: "Un ALA de avión hecha de plumas de pavo real que late como un corazón." },
+            { n: 6, l: "S, Z", w: "AS", s: "Un AS de picas de oro que corta una montaña como si fuera mantequilla." },
+            { n: 7, l: "F", w: "UFO", s: "Un UFO (ovni) que abduce una vaca y la convierte en un helado." },
+            { n: 8, l: "CH, J, G", w: "HACHA", s: "Un HACHA que al golpear un árbol hace que salgan monedas de oro." },
+            { n: 9, l: "V, B, P", w: "AVE", s: "Un AVE fénix que lleva un volcán en llamas sobre su espalda." },
+            { n: 10, l: "TR", w: "TORO", s: "Un TORO con cuernos de cristal que baila flamenco sobre un piano." },
+            { n: 11, l: "TT", w: "TETA", s: "Una TETA gigante que alimenta a un ejército de soldaditos de plomo." },
+            { n: 12, l: "TN", w: "TUNO", s: "Un TUNO cantando bajo el agua mientras le persigue un tiburón con gafas." },
+            { n: 13, l: "TM", w: "TIMO", s: "Un trilero que es un pulpo haciendo un TIMO con cáscaras de coco." },
+            { n: 14, l: "TC", w: "TACO", s: "Un TACO mexicano picante que escupe fuego y derrite un iglú." },
+            { n: 15, l: "TL", w: "TELA", s: "Una TELA de araña láser que atrapa un satélite espacial." },
+            { n: 16, l: "TZ", w: "TAZA", s: "Una TAZA de café hirviendo de la que sale un géiser de lava." },
+            { n: 17, l: "TF", w: "TUFO", s: "Un TUFO verde maloliente que hace que las flores se vuelvan monstruos." },
+            { n: 18, l: "TCH", w: "TECHO", s: "Un TECHO que se abre y deja caer una lluvia de pianos de cola." },
+            { n: 19, l: "TP", w: "TAPA", s: "Una TAPA de alcantarilla que sale volando como un disco de hockey." },
+            { n: 20, l: "NR", w: "NORIA", s: "Una NORIA donde las cabinas son cabezas de león rugiendo." },
+            { n: 21, l: "ND", w: "NIDO", s: "Un NIDO de huevos de dragón que echan chispas eléctricas." },
+            { n: 22, l: "NÑ", w: "NIÑA", s: "Una NIÑA que levanta un camión con un solo dedo." },
+            { n: 23, l: "NM", w: "NEMO", s: "NEMO (el pez) montado en un tiburón mecánico disparando burbujas." },
+            { n: 24, l: "NC", w: "NUCA", s: "Una NUCA humana con un ojo tatuado que parpadea y te mira." },
+            { n: 25, l: "NL", w: "NILO", s: "El río NILO lleno de cocodrilos con sombreros de copa." },
+            { n: 26, l: "NS", w: "NASA", s: "Un cohete de la NASA despegando desde un hormiguero gigante." },
+            { n: 27, l: "NF", w: "NIFE", s: "Un cuchillo (NIFE) de hielo que corta un sol radiante." },
+            { n: 28, l: "NCH", w: "NICHO", s: "Un NICHO de cementerio del que salen manos de esqueleto aplaudiendo." },
+            { n: 29, l: "NB", w: "NUBE", s: "Una NUBE de algodón que llueve caramelos ácidos." },
+            { n: 30, l: "MR", w: "MAR", s: "Un MAR de mercurio donde nadan delfines plateados." },
+            { n: 31, l: "MT", w: "MOTO", s: "Una MOTO con ruedas de queso que va dejando un rastro de pizza." },
+            { n: 32, l: "MN", w: "MINA", s: "Una MINA explosiva que al estallar suelta miles de mariposas." },
+            { n: 33, l: "MM", w: "MAMA", s: "Una MAMA osa que cocina galletas en un volcán." },
+            { n: 34, l: "MC", w: "MOCO", s: "Un MOCO verde elástico que se convierte en una cama elástica." },
+            { n: 35, l: "ML", w: "MULA", s: "Una MULA con alas de ángel tirando de un carro de estrellas." },
+            { n: 36, l: "MS", w: "MESA", s: "Una MESA de cristal que camina sobre patas de araña doradas." },
+            { n: 37, l: "MF", w: "MAFIA", s: "Un gánster de la MAFIA disparando una metralleta que lanza flores." },
+            { n: 38, l: "MCH", w: "MECHA", s: "Una MECHA de bomba que al quemarse suena como una orquesta." },
+            { n: 39, l: "MP", w: "MAPA", s: "Un MAPA del tesoro que se quema y muestra el camino en 3D." },
+            { n: 40, l: "CR", w: "CURA", s: "Un CURA haciendo surf en una tabla bendecida." },
+            { n: 41, l: "CT", w: "CATA", s: "Una CATA de vinos donde las botellas cantan ópera." },
+            { n: 42, l: "CN", w: "CANA", s: "Una CANA blanca y larga que se enrolla como un látigo." },
+            { n: 43, l: "CM", w: "CAMA", s: "Una CAMA voladora que atraviesa una tormenta de almohadas." },
+            { n: 44, l: "CC", w: "COCO", s: "Un COCO con cara de monstruo que te persigue por la playa." },
+            { n: 45, l: "CL", w: "COLA", s: "Una COLA de sirena que brilla como un arcoíris bajo el agua." },
+            { n: 46, l: "CS", w: "CASA", s: "Una CASA de chocolate que se derrite bajo un sol de caramelo." },
+            { n: 47, l: "CF", w: "CAFE", s: "Un CAFE negro del que sale un genio de humo oscuro." },
+            { n: 48, l: "CCH", w: "COCHE", s: "Un COCHE con patas de elefante que corre por la selva." },
+            { n: 49, l: "CB", w: "CUBA", s: "Una bandera de CUBA que se convierte en una capa de superhéroe." },
+            { n: 50, l: "LR", w: "LORO", s: "Un LORO pirata que te insulta en 10 idiomas diferentes." },
+            { n: 51, l: "LT", w: "LATA", s: "Una LATA de sardinas que al abrirse suelta una ballena azul." },
+            { n: 52, l: "LN", w: "LUNA", s: "La LUNA llena con una cara de payaso guiñándote el ojo." },
+            { n: 53, l: "LM", w: "LIMA", s: "Una LIMA de uñas gigante que afila un rascacielos." },
+            { n: 54, l: "LC", w: "LACA", s: "Un bote de LACA que congela a la gente como estatuas de hielo." },
+            { n: 55, l: "LL", w: "LULU", s: "Un perro caniche LULU gigante que aplasta una ciudad jugando." },
+            { n: 56, l: "LS", w: "LOSA", s: "Una LOSA de mármol que te persigue rodando por una escalera." },
+            { n: 57, l: "LF", w: "ALFA", s: "Un lobo ALFA aullando frente a un portal interdimensional." },
+            { n: 58, l: "LCH", w: "LUCHO", s: "Un luchador de LUCHA libre peleando contra un oso polar." },
+            { n: 59, l: "LB", w: "LOBA", s: "Una LOBA amamantando a Rómulo y Remo sobre un rascacielos." },
+            { n: 60, l: "SR", w: "SOR", s: "Una MONJA (SOR) disparando un arco con flechas de luz." },
+            { n: 61, l: "ST", w: "SETA", s: "Una SETA alucinógena que baila y canta heavy metal." },
+            { n: 62, l: "SN", w: "SENA", s: "El río SENA de París cubierto de burbujas de champán." },
+            { n: 63, l: "SM", w: "SUMA", s: "Un signo de SUMA (+) gigante que aplasta una resta (-) llorona." },
+            { n: 64, l: "SC", w: "SACO", s: "Un SACO lleno de gatos que maúllan como una sirena de ambulancia." },
+            { n: 65, l: "SL", w: "SOLA", s: "Una mujer SOLA en una isla desierta hablando con un coco." },
+            { n: 66, l: "SS", w: "SESO", s: "Un SESO gigante en un frasco que controla una ciudad con la mente." },
+            { n: 67, l: "SF", w: "SOFA", s: "Un SOFA que te traga y te escupe en una playa del Caribe." },
+            { n: 68, l: "SCH", w: "SOJA", s: "Un bote de salsa de SOJA que inunda un restaurante chino." },
+            { n: 69, l: "SB", w: "SAPO", s: "Un SAPO con corona que al besarlo explota en confeti." },
+            { n: 70, l: "FR", w: "FARO", s: "Un FARO que proyecta sombras de monstruos sobre el mar." },
+            { n: 71, l: "FT", w: "FOTO", s: "Una FOTO antigua de la que sale el personaje y te abraza." },
+            { n: 72, l: "FN", w: "FAUNA", s: "Un bosque lleno de FAUNA extraña con tres cabezas." },
+            { n: 73, l: "FM", w: "FAMA", s: "Una estrella de la FAMA de Hollywood que empieza a sangrar." },
+            { n: 74, l: "FC", w: "FOCA", s: "Una FOCA jugando con una bomba a punto de explotar." },
+            { n: 75, l: "FL", w: "FILA", s: "Una FILA india de hormigas llevando un elefante a cuestas." },
+            { n: 76, l: "FS", w: "FOSA", s: "Una FOSA abisal de la que sale un ojo gigante de Cthulhu." },
+            { n: 77, l: "FF", w: "FOFO", s: "Un payaso FOFO que se desinfla como un globo viejo." },
+            { n: 78, l: "FCH", w: "FICHA", s: "Una FICHA de dominó gigante que provoca un desastre mundial." },
+            { n: 79, l: "FB", w: "FABA", s: "Una HABICHUELA (FABA) mágica que crece hasta el espacio." },
+            { n: 80, l: "CHR", w: "CHORRO", s: "Un CHORRO de agua a presión que corta un diamante." },
+            { n: 81, l: "CHT", w: "CHATA", s: "Una mujer de nariz CHATA que aspira un jardín entero." },
+            { n: 82, l: "CHN", w: "CHINA", s: "Una CHINA gigante saltando sobre la Muralla China." },
+            { n: 83, l: "CHM", w: "CHAMA", s: "Una CHAMA (niña) de fuego que corre sobre un bosque." },
+            { n: 84, l: "CHC", w: "CHICA", s: "Una CHICA con alas de mariposa hecha de cristal." },
+            { n: 85, l: "CHL", w: "CHULO", s: "Un tipo CHULO con gafas de sol que reflejan el futuro." },
+            { n: 86, l: "CHS", w: "CHAS", s: "Un chasquido de dedos (CHAS) que borra a la mitad de la gente." },
+            { n: 87, l: "CHF", w: "CHUFA", s: "Un campo de CHUFA del que sale horchata helada." },
+            { n: 88, l: "CHCH", w: "CHUCHO", s: "Un perro CHUCHO callejero que habla como un filósofo." },
+            { n: 89, l: "CHB", w: "CHIVO", s: "Un CHIVO expiatorio cargando con todos los pecados del mundo." },
+            { n: 90, l: "BR/PR", w: "BARRA", s: "Una BARRA de hierro al rojo vivo que se dobla como goma." },
+            { n: 91, l: "BT", w: "BOTA", s: "Una BOTA de siete leguas que atraviesa continentes." },
+            { n: 92, l: "VN", w: "VINO", s: "Un barril de VINO que al abrirse suelta una marea roja." },
+            { n: 93, l: "PM", w: "PUMA", s: "Un PUMA de jade que cobra vida y ruge como un trueno." },
+            { n: 94, l: "VC", w: "VACA", s: "Una VACA voladora con hélice en la cola." },
+            { n: 95, l: "VL", w: "VELA", s: "Una VELA que quema oscuridad en lugar de luz." },
+            { n: 96, l: "VS", w: "VASO", s: "Un VASO de cristal que nunca se llena por mucho que bebas." },
+            { n: 97, l: "VF", w: "VIFA", s: "Un monstruo VIFA con mil dientes y ojos de serpiente." },
+            { n: 98, l: "BCH", w: "BACHE", s: "Un BACHE en la carretera que es un portal a otra dimensión." },
+            { n: 99, l: "PP", w: "PIPA", s: "Una PIPA de fumar de la que salen barcos piratas de humo." }
         ];
 
         const App = () => {
-            const [view, setView] = useState('gallery'); // 'gallery', 'links', 'train'
-            const [activeSection, setActiveSection] = useState(0);
-            const [images, setImages] = useState(() => JSON.parse(localStorage.getItem('saved_images') || '{}'));
-            const [stories, setStories] = useState(() => JSON.parse(localStorage.getItem('saved_stories') || '{}'));
+            const [view, setView] = useState('gallery');
+            const [activeBlock, setActiveBlock] = useState(0);
+            const [images, setImages] = useState(() => JSON.parse(localStorage.getItem('bohemio_images') || '{}'));
             const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
-            const [showSettings, setShowSettings] = useState(!apiKey);
+            const [showConfig, setShowConfig] = useState(!apiKey);
             const [loading, setLoading] = useState(false);
-            const [trainIdx, setTrainIdx] = useState(0);
+            const [testIdx, setTestIdx] = useState(0);
             const [flipped, setFlipped] = useState(false);
-            const [stats, setStats] = useState({ ok: 0, total: 0 });
 
             useEffect(() => {
-                localStorage.setItem('saved_images', JSON.stringify(images));
-                localStorage.setItem('saved_stories', JSON.stringify(stories));
-            }, [images, stories]);
+                localStorage.setItem('bohemio_images', JSON.stringify(images));
+            }, [images]);
 
-            const generateImage = async (word, id) => {
-                if (!apiKey) { setShowSettings(true); return; }
+            const generateImg = async (word, story, id) => {
+                if (!apiKey) { setShowConfig(true); return; }
                 setLoading(true);
                 try {
-                    // DIRECTRIZ CAMPAYO: Inverosímil, exagerado, acción, color.
-                    const prompt = `A highly bizarre, surreal, and exaggerated 3D mnemonic illustration of "${word}". 
-                    Distorted proportions, cinematic vibrant colors, extreme action, 
-                    white studio background, mnemonic art style. Must be shocking and impossible.`;
-
+                    const prompt = `Highly surreal, bizarre mnemonic 3D render: ${story}. Based on the word ${word}. Vivid colors, exaggerated proportions, cinematic lighting, white background. Must be shocking for memory retention.`;
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instances: [{ prompt }],
-                            parameters: { sampleCount: 1 }
-                        })
+                        body: JSON.stringify({ instances: [{ prompt }], parameters: { sampleCount: 1 } })
                     });
                     const data = await res.json();
                     if (data.predictions?.[0]) {
@@ -84,221 +163,111 @@
                 finally { setLoading(false); }
             };
 
-            const updateStory = (id, text) => {
-                setStories(prev => ({ ...prev, [id]: text }));
-            };
-
-            const sections = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
-            const currentData = DATABASE.slice(activeSection * 10, (activeSection + 1) * 10);
-
-            const startRandomTest = () => {
-                setTrainIdx(Math.floor(Math.random() * 100));
-                setFlipped(false);
-                setView('train');
-            };
+            const blocks = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
+            const currentItems = DATABASE.slice(activeBlock * 10, (activeBlock + 1) * 10);
 
             return (
-                <div className="min-h-screen flex flex-col">
-                    {/* Header Estilo Pro */}
-                    <header className="bg-slate-900 text-white p-4 sticky top-0 z-[60] shadow-2xl">
-                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="min-h-screen bg-slate-50 flex flex-col">
+                    {/* Header */}
+                    <header className="bg-indigo-900 text-white p-4 sticky top-0 z-50 shadow-xl">
+                        <div className="max-w-6xl mx-auto flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="bg-indigo-600 p-2 rounded-2xl shadow-lg">
-                                    <i data-lucide="brain" className="w-6 h-6 text-white"></i>
-                                </div>
+                                <i data-lucide="brain" className="w-8 h-8 text-indigo-400"></i>
                                 <div>
-                                    <h1 className="font-black text-xl tracking-tighter uppercase">Bohemio <span className="text-indigo-400">Bank</span></h1>
-                                    <span className="text-[10px] font-bold text-slate-400 tracking-[0.3em] uppercase italic">Fotos & Enlaces Campayo</span>
+                                    <h1 className="font-black text-xl tracking-tighter uppercase leading-none">Bohemio Pro</h1>
+                                    <p className="text-[10px] font-bold tracking-[0.2em] text-indigo-300">CASILLERO MAESTRO 0-99</p>
                                 </div>
                             </div>
-                            
-                            <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
-                                <button onClick={() => setView('gallery')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${view === 'gallery' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>BANCO FOTOS</button>
-                                <button onClick={() => setView('links')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${view === 'links' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>BANCO ENLACES</button>
-                                <button onClick={() => setView('train')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${view === 'train' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>ENTRENAR</button>
-                                <button onClick={() => setShowSettings(true)} className="p-2 ml-1 text-slate-500 hover:text-white"><i data-lucide="settings" className="w-4 h-4"></i></button>
+                            <div className="flex bg-indigo-950 p-1 rounded-xl">
+                                <button onClick={() => setView('gallery')} className={`px-4 py-2 rounded-lg text-xs font-black ${view === 'gallery' ? 'bg-indigo-600' : 'text-indigo-400'}`}>BIBLIOTECA</button>
+                                <button onClick={() => { setView('test'); setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} className={`px-4 py-2 rounded-lg text-xs font-black ${view === 'test' ? 'bg-indigo-600' : 'text-indigo-400'}`}>SIMULACRO</button>
+                                <button onClick={() => setShowConfig(true)} className="p-2 ml-1 text-indigo-400"><i data-lucide="settings" className="w-4 h-4"></i></button>
                             </div>
                         </div>
                     </header>
 
-                    {/* API Settings */}
-                    {showSettings && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-6">
-                            <div className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl border border-indigo-100">
-                                <h2 className="text-3xl font-black mb-4 uppercase tracking-tighter text-slate-800">Motor AI</h2>
-                                <p className="text-xs text-slate-500 mb-6 font-bold uppercase tracking-widest">Configura tu clave Gemini para generar imágenes</p>
-                                <input 
-                                    type="password"
-                                    placeholder="AIzaSy..."
-                                    className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl mb-6 font-mono text-sm outline-none focus:border-indigo-500 transition-all shadow-inner"
-                                    value={apiKey}
-                                    onChange={(e) => setApiKey(e.target.value)}
-                                />
-                                <button 
-                                    onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowSettings(false); }}
-                                    className="w-full py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 uppercase text-xs tracking-[0.2em]"
-                                >
-                                    Activar Academia
-                                </button>
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="block mt-6 text-[10px] text-center text-indigo-500 font-black uppercase tracking-widest underline">
-                                    Obtener clave gratuita
-                                </a>
-                            </div>
-                        </div>
-                    )}
-
-                    <main className="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
-                        {/* Selector de Secciones Mnemotécnicas */}
-                        {(view === 'gallery' || view === 'links') && (
-                            <div className="flex overflow-x-auto gap-2 pb-6 hide-scrollbar snap-x mb-8">
-                                {sections.map((s, idx) => (
-                                    <button 
-                                        key={s}
-                                        onClick={() => setActiveSection(idx)}
-                                        className={`flex-shrink-0 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all snap-start shadow-sm ${activeSection === idx ? 'bg-indigo-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}
-                                    >
-                                        Bloque {s}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-
+                    {/* Main Content */}
+                    <main className="max-w-6xl mx-auto w-full p-4 md:p-8 flex-grow">
                         {view === 'gallery' ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {currentData.map(item => (
-                                    <div key={item.n} className="bg-white rounded-[2.5rem] p-3 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group relative">
-                                        <div className="aspect-square bg-slate-50 rounded-[2rem] relative overflow-hidden flex items-center justify-center border border-slate-100 mb-4">
-                                            {images[item.n] ? (
-                                                <img src={images[item.n]} className="w-full h-full object-cover animate-in zoom-in-95 duration-700" alt={item.w} />
-                                            ) : (
-                                                <i data-lucide="image" className="text-slate-200 w-12 h-12"></i>
-                                            )}
-                                            <div className="absolute top-0 left-0 bg-slate-900 text-white text-[10px] font-black px-3 py-1.5 rounded-br-2xl">{item.n}</div>
-                                            <button 
-                                                onClick={() => generateImage(item.w, item.n)}
-                                                className="absolute inset-0 bg-indigo-900/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2"
-                                            >
-                                                <i data-lucide="sparkles" className="text-white w-6 h-6"></i>
-                                                <span className="text-white text-[8px] font-black uppercase text-center px-4 tracking-widest">Generar Foto Campayo</span>
-                                            </button>
-                                        </div>
-                                        <div className="text-center pb-2">
-                                            <h3 className="text-xs font-black uppercase tracking-tighter text-slate-800">{item.w}</h3>
-                                            <p className="text-[9px] font-mono font-bold text-indigo-400 mt-1 uppercase opacity-60 tracking-widest">{item.l}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : view === 'links' ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
-                                {currentData.map(item => (
-                                    <div key={item.n} className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex gap-6 items-start hover:shadow-xl transition-all">
-                                        <div className="w-24 h-24 bg-indigo-50 rounded-[1.5rem] flex-shrink-0 flex items-center justify-center relative overflow-hidden border border-indigo-100 shadow-inner">
-                                            {images[item.n] ? (
-                                                <img src={images[item.n]} className="w-full h-full object-cover" alt={item.w} />
-                                            ) : (
-                                                <span className="text-3xl font-black text-indigo-200">{item.n}</span>
-                                            )}
-                                        </div>
-                                        <div className="flex-grow">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <h3 className="font-black text-slate-800 uppercase tracking-tighter text-lg">{item.n} — {item.w}</h3>
-                                                <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full">{item.l}</span>
+                            <div className="space-y-8 animate-in fade-in duration-500">
+                                <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar snap-x">
+                                    {blocks.map((b, i) => (
+                                        <button key={i} onClick={() => setActiveBlock(i)} className={`flex-shrink-0 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest snap-start ${activeBlock === i ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200'}`}>Bloque {b}</button>
+                                    ))}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                    {currentItems.map(item => (
+                                        <div key={item.n} className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex gap-6 hover:shadow-xl transition-all group">
+                                            <div className="w-32 h-32 bg-slate-50 rounded-[2rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform">
+                                                {images[item.n] ? (
+                                                    <img src={images[item.n]} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="text-center">
+                                                        <i data-lucide="image" className="w-8 h-8 text-slate-200 mx-auto"></i>
+                                                        <span className="text-[3rem] font-black text-slate-100 absolute inset-0 flex items-center justify-center -z-10">{item.n}</span>
+                                                    </div>
+                                                )}
+                                                <button onClick={() => generateImg(item.w, item.s, item.n)} className="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <i data-lucide="sparkles" className="text-white w-8 h-8"></i>
+                                                </button>
                                             </div>
-                                            <textarea 
-                                                className="w-full bg-slate-50 border-none rounded-2xl p-4 text-xs font-medium placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-100 transition-all resize-none min-h-[80px]"
-                                                placeholder="Escribe tu asociación inverosímil aquí (Enlace)..."
-                                                value={stories[item.n] || ''}
-                                                onChange={(e) => updateStory(item.n, e.target.value)}
-                                            ></textarea>
+                                            <div className="flex-grow">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="text-2xl font-black uppercase text-indigo-900">{item.n} — {item.w}</h3>
+                                                    <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black">{item.l}</span>
+                                                </div>
+                                                <p className="text-sm font-semibold text-slate-500 italic leading-relaxed">"{item.s}"</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         ) : (
-                            <div className="max-w-md mx-auto py-4 animate-in zoom-in-95 duration-500 text-center">
-                                <div className="flex justify-between items-center mb-8 px-6">
-                                    <div className="text-[10px] font-black uppercase text-indigo-600 bg-white px-5 py-2 rounded-full border border-indigo-100 flex items-center gap-2 shadow-sm">
-                                        <i data-lucide="trophy" className="w-3 h-3 text-amber-500"></i> {stats.ok} / {stats.total}
-                                    </div>
-                                    <button onClick={startRandomTest} className="text-indigo-600 bg-white p-2 rounded-full shadow-sm hover:rotate-180 transition-transform duration-500"><i data-lucide="refresh-cw" className="w-5 h-5"></i></button>
-                                </div>
-
-                                <div className="w-full aspect-[3/4] perspective-1000 group">
-                                    <div 
-                                        className={`relative w-full h-full card-inner transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`}
-                                        onClick={() => !flipped && setFlipped(true)}
-                                    >
-                                        {/* Cara Número */}
-                                        <div className="absolute inset-0 bg-indigo-700 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[15px] border-indigo-600/50 overflow-hidden">
-                                            <div className="absolute top-12 opacity-30 font-black text-[10px] tracking-[0.5em] uppercase">Bohemio Academy</div>
-                                            <span className="text-[12rem] font-black leading-none drop-shadow-2xl">{DATABASE[trainIdx].n}</span>
-                                            <p className="mt-8 text-indigo-200 text-[10px] font-black uppercase tracking-[0.5em] opacity-60">Visualiza la escena</p>
+                            <div className="max-w-md mx-auto py-10 animate-in zoom-in-95">
+                                <div className="w-full aspect-[3/4] perspective-1000">
+                                    <div className={`relative w-full h-full card-inner transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`} onClick={() => setFlipped(true)}>
+                                        <div className="absolute inset-0 bg-indigo-700 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[15px] border-indigo-600">
+                                            <span className="text-[12rem] font-black drop-shadow-2xl">{DATABASE[testIdx].n}</span>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-50">Toca para recordar</p>
                                         </div>
-                                        
-                                        {/* Cara Respuesta */}
                                         <div className="absolute inset-0 bg-white rounded-[4rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-10 border-4 border-indigo-600">
-                                            <div className="w-full aspect-square bg-slate-50 rounded-[3rem] mb-8 overflow-hidden flex items-center justify-center border-2 border-slate-100 shadow-inner">
-                                                {images[trainIdx] ? (
-                                                    <img src={images[trainIdx]} className="w-full h-full object-cover" alt="mnemonic" />
-                                                ) : (
-                                                    <i data-lucide="image" className="text-slate-100 w-24 h-24"></i>
-                                                )}
+                                            <div className="w-full aspect-square bg-slate-50 rounded-[3rem] mb-6 overflow-hidden border-2 border-slate-100 shadow-inner flex items-center justify-center">
+                                                {images[testIdx] ? <img src={images[testIdx]} className="w-full h-full object-cover" /> : <i data-lucide="image" className="w-20 h-20 text-slate-100"></i>}
                                             </div>
-                                            <h2 className="text-5xl font-black uppercase text-indigo-900 tracking-tighter leading-none mb-2">{DATABASE[trainIdx].w}</h2>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">"{stories[trainIdx] || 'Sin historia guardada'}"</p>
-                                            <span className="text-2xl font-mono text-indigo-600 font-black tracking-widest">{DATABASE[trainIdx].l}</span>
+                                            <h2 className="text-5xl font-black uppercase text-indigo-900 leading-none">{DATABASE[testIdx].w}</h2>
+                                            <p className="text-xs font-bold text-slate-400 mt-4 text-center">"{DATABASE[testIdx].s}"</p>
                                         </div>
                                     </div>
                                 </div>
-
                                 {flipped && (
-                                    <div className="grid grid-cols-2 gap-4 mt-10">
-                                        <button 
-                                            onClick={() => { setStats(s => ({...s, total: s.total+1})); startRandomTest(); }}
-                                            className="py-5 bg-white text-slate-400 font-black rounded-[2.5rem] border-2 border-slate-100 uppercase text-[10px] tracking-widest shadow-sm active:scale-95 transition-all"
-                                        >
-                                            Repasar
-                                        </button>
-                                        <button 
-                                            onClick={() => { setStats(s => ({...s, ok: s.ok+1, total: s.total+1})); startRandomTest(); }}
-                                            className="py-5 bg-indigo-600 text-white font-black rounded-[2.5rem] shadow-xl shadow-indigo-100 active:scale-95 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
-                                        >
-                                            <i data-lucide="check" className="w-4 h-4"></i> ¡Lo tengo!
-                                        </button>
-                                    </div>
+                                    <button onClick={() => { setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} className="w-full mt-8 py-5 bg-indigo-600 text-white font-black rounded-[2.5rem] shadow-xl shadow-indigo-200 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                        <i data-lucide="refresh-cw" className="w-4 h-4"></i> Siguiente Número
+                                    </button>
                                 )}
-                            </div>
-                        )}
-
-                        {(view === 'gallery' || view === 'links') && (
-                            <div className="flex justify-center pt-16">
-                                <button 
-                                    onClick={startRandomTest}
-                                    className="bg-slate-900 text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-[0.3em] shadow-2xl flex items-center gap-4 hover:bg-indigo-600 transition-all active:scale-95 group"
-                                >
-                                    <i data-lucide="shuffle" className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"></i> Simulacro Mental Pro
-                                </button>
                             </div>
                         )}
                     </main>
 
-                    {/* Loader Campayo */}
-                    {loading && (
-                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 glass px-10 py-6 rounded-[2.5rem] shadow-2xl flex items-center gap-5 z-[200] border border-white animate-in zoom-in-95 duration-300">
-                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-600 w-7 h-7"></i>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-800 leading-none">IA Bohemio Academy</span>
-                                <span className="text-[10px] text-slate-400 font-bold tracking-widest mt-2 uppercase italic">Esculpiendo asociación inverosímil...</span>
+                    {/* Settings Modal */}
+                    {showConfig && (
+                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+                            <div className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95">
+                                <h2 className="text-3xl font-black mb-2 uppercase tracking-tighter">AI Ready</h2>
+                                <p className="text-xs text-slate-500 mb-6 font-bold uppercase tracking-widest leading-relaxed">Coge tu clave de Gemini y pégala aquí para activar el motor de imágenes de Campayo.</p>
+                                <input type="password" placeholder="AIzaSy..." className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl mb-4 font-mono text-sm outline-none focus:border-indigo-500" value={apiKey} onChange={e => setApiKey(e.target.value)} />
+                                <button onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowConfig(false); }} className="w-full py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl hover:bg-indigo-700 uppercase text-xs tracking-widest">Activar Academia</button>
+                                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="block mt-6 text-[10px] text-center text-indigo-500 font-black uppercase underline tracking-widest">Obtener clave gratuita</a>
                             </div>
                         </div>
                     )}
 
-                    <footer className="bg-white border-t border-slate-100 p-8 text-center mt-auto">
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
-                            Kaizen: Mejora un 1% cada día. Método Campayo: Visualiza con emoción.
-                        </p>
-                    </footer>
+                    {loading && (
+                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 z-[200] border border-slate-100 animate-in slide-in-from-bottom-5">
+                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-600 w-6 h-6"></i>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800">Esculpiendo asociación inverosímil...</span>
+                        </div>
+                    )}
                 </div>
             );
         };
