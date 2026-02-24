@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
@@ -19,15 +19,17 @@
         .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .animate-pulse-soft { animation: pulse-soft 2s infinite; }
     </style>
 </head>
-<body class="bg-slate-50">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // DATABASE MAESTRA CON ENLACES YA CREADOS (TRABAJO TERMINADO)
+        // BASE DE DATOS MAESTRA 0-99 (Método Campayo)
         const DATABASE = [
             { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego que atraviesa un elefante rosa con tutú." },
             { n: 1, l: "T, D", w: "HADA", s: "Un HADA minúscula que golpea con su varita un yunque y sale dinamita." },
@@ -149,39 +151,55 @@
                 if (!apiKey) { setShowConfig(true); return; }
                 setLoading(true);
                 try {
-                    const prompt = `Highly surreal, bizarre mnemonic 3D render: ${story}. Based on the word ${word}. Vivid colors, exaggerated proportions, cinematic lighting, white background. Must be shocking for memory retention.`;
+                    const prompt = `Highly surreal, bizarre mnemonic 3D render: ${story}. Based on the word ${word}. Vivid colors, exaggerated proportions, cinematic lighting, white background. Must be shocking for memory retention. No text.`;
+                    
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ instances: [{ prompt }], parameters: { sampleCount: 1 } })
+                        body: JSON.stringify({ 
+                            instances: [{ prompt }], 
+                            parameters: { sampleCount: 1 } 
+                        })
                     });
+                    
                     const data = await res.json();
-                    if (data.predictions?.[0]) {
+                    
+                    if (data.predictions && data.predictions[0]) {
                         setImages(prev => ({ ...prev, [id]: `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}` }));
+                    } else {
+                        throw new Error(data.error?.message || "Error desconocido");
                     }
-                } catch (e) { alert("Error API. Revisa tu clave."); }
-                finally { setLoading(false); }
+                } catch (e) { 
+                    console.error(e);
+                    alert("Error con la IA: Asegúrate de que tu clave es válida y tienes cuota gratuita."); 
+                } finally { 
+                    setLoading(false); 
+                }
             };
 
             const blocks = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
             const currentItems = DATABASE.slice(activeBlock * 10, (activeBlock + 1) * 10);
 
             return (
-                <div className="min-h-screen bg-slate-50 flex flex-col">
+                <div className="min-h-screen flex flex-col">
                     {/* Header */}
-                    <header className="bg-indigo-900 text-white p-4 sticky top-0 z-50 shadow-xl">
+                    <header className="bg-indigo-900 text-white p-4 sticky top-0 z-50 shadow-xl border-b border-indigo-800">
                         <div className="max-w-6xl mx-auto flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <i data-lucide="brain" className="w-8 h-8 text-indigo-400"></i>
+                                <div className="bg-indigo-800 p-2 rounded-xl border border-indigo-700">
+                                    <i data-lucide="brain" className="w-8 h-8 text-indigo-400"></i>
+                                </div>
                                 <div>
                                     <h1 className="font-black text-xl tracking-tighter uppercase leading-none">Bohemio Pro</h1>
                                     <p className="text-[10px] font-bold tracking-[0.2em] text-indigo-300">CASILLERO MAESTRO 0-99</p>
                                 </div>
                             </div>
-                            <div className="flex bg-indigo-950 p-1 rounded-xl">
-                                <button onClick={() => setView('gallery')} className={`px-4 py-2 rounded-lg text-xs font-black ${view === 'gallery' ? 'bg-indigo-600' : 'text-indigo-400'}`}>BIBLIOTECA</button>
-                                <button onClick={() => { setView('test'); setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} className={`px-4 py-2 rounded-lg text-xs font-black ${view === 'test' ? 'bg-indigo-600' : 'text-indigo-400'}`}>SIMULACRO</button>
-                                <button onClick={() => setShowConfig(true)} className="p-2 ml-1 text-indigo-400"><i data-lucide="settings" className="w-4 h-4"></i></button>
+                            <div className="flex bg-indigo-950 p-1 rounded-xl shadow-inner border border-indigo-800">
+                                <button onClick={() => setView('gallery')} className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${view === 'gallery' ? 'bg-indigo-600 shadow-md' : 'text-indigo-400 hover:text-white'}`}>BIBLIOTECA</button>
+                                <button onClick={() => { setView('test'); setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${view === 'test' ? 'bg-indigo-600 shadow-md' : 'text-indigo-400 hover:text-white'}`}>SIMULACRO</button>
+                                <button onClick={() => setShowConfig(true)} className="p-2 ml-1 text-indigo-400 hover:text-white transition-colors">
+                                    <i data-lucide="settings" className="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>
                     </header>
@@ -192,56 +210,84 @@
                             <div className="space-y-8 animate-in fade-in duration-500">
                                 <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar snap-x">
                                     {blocks.map((b, i) => (
-                                        <button key={i} onClick={() => setActiveBlock(i)} className={`flex-shrink-0 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest snap-start ${activeBlock === i ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200'}`}>Bloque {b}</button>
+                                        <button 
+                                            key={i} 
+                                            onClick={() => setActiveBlock(i)} 
+                                            className={`flex-shrink-0 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest snap-start transition-all border-2 ${activeBlock === i ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200'}`}
+                                        >
+                                            Bloque {b}
+                                        </button>
                                     ))}
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     {currentItems.map(item => (
-                                        <div key={item.n} className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex gap-6 hover:shadow-xl transition-all group">
-                                            <div className="w-32 h-32 bg-slate-50 rounded-[2rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform">
+                                        <div key={item.n} className="bg-white rounded-[2.5rem] p-6 border border-slate-100 shadow-sm flex gap-6 hover:shadow-xl transition-all group relative overflow-hidden">
+                                            <div className="w-32 h-32 bg-slate-50 rounded-[2rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform duration-500">
                                                 {images[item.n] ? (
-                                                    <img src={images[item.n]} className="w-full h-full object-cover" />
+                                                    <img src={images[item.n]} className="w-full h-full object-cover animate-in zoom-in-95 duration-700" alt={item.w} />
                                                 ) : (
-                                                    <div className="text-center">
-                                                        <i data-lucide="image" className="w-8 h-8 text-slate-200 mx-auto"></i>
-                                                        <span className="text-[3rem] font-black text-slate-100 absolute inset-0 flex items-center justify-center -z-10">{item.n}</span>
+                                                    <div className="text-center relative">
+                                                        <i data-lucide="image" className="w-8 h-8 text-slate-200 mx-auto group-hover:animate-bounce"></i>
+                                                        <span className="text-[3rem] font-black text-slate-100/50 absolute inset-0 flex items-center justify-center pointer-events-none uppercase">{item.n}</span>
                                                     </div>
                                                 )}
-                                                <button onClick={() => generateImg(item.w, item.s, item.n)} className="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <button 
+                                                    onClick={() => generateImg(item.w, item.s, item.n)} 
+                                                    className={`absolute inset-0 bg-indigo-900/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 ${loading ? 'cursor-not-allowed' : ''}`}
+                                                    disabled={loading}
+                                                >
                                                     <i data-lucide="sparkles" className="text-white w-8 h-8"></i>
+                                                    <span className="text-[8px] text-white font-black uppercase tracking-widest">Generar IA</span>
                                                 </button>
                                             </div>
-                                            <div className="flex-grow">
+                                            <div className="flex-grow flex flex-col justify-center">
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <h3 className="text-2xl font-black uppercase text-indigo-900">{item.n} — {item.w}</h3>
-                                                    <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black">{item.l}</span>
+                                                    <h3 className="text-2xl font-black uppercase text-indigo-900 tracking-tighter">{item.n} — {item.w}</h3>
+                                                    <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black border border-indigo-100 uppercase">{item.l}</span>
                                                 </div>
-                                                <p className="text-sm font-semibold text-slate-500 italic leading-relaxed">"{item.s}"</p>
+                                                <p className="text-sm font-semibold text-slate-500 italic leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">"{item.s}"</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         ) : (
-                            <div className="max-w-md mx-auto py-10 animate-in zoom-in-95">
+                            <div className="max-w-md mx-auto py-10 animate-in zoom-in-95 duration-500">
                                 <div className="w-full aspect-[3/4] perspective-1000">
                                     <div className={`relative w-full h-full card-inner transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`} onClick={() => setFlipped(true)}>
-                                        <div className="absolute inset-0 bg-indigo-700 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[15px] border-indigo-600">
-                                            <span className="text-[12rem] font-black drop-shadow-2xl">{DATABASE[testIdx].n}</span>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-50">Toca para recordar</p>
-                                        </div>
-                                        <div className="absolute inset-0 bg-white rounded-[4rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-10 border-4 border-indigo-600">
-                                            <div className="w-full aspect-square bg-slate-50 rounded-[3rem] mb-6 overflow-hidden border-2 border-slate-100 shadow-inner flex items-center justify-center">
-                                                {images[testIdx] ? <img src={images[testIdx]} className="w-full h-full object-cover" /> : <i data-lucide="image" className="w-20 h-20 text-slate-100"></i>}
+                                        {/* Front: El Número */}
+                                        <div className="absolute inset-0 bg-indigo-700 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[15px] border-indigo-600/50">
+                                            <div className="absolute top-12 opacity-30 font-black text-[10px] tracking-[0.5em] uppercase">Mente Prodigiosa</div>
+                                            <span className="text-[12rem] font-black leading-none drop-shadow-2xl">{DATABASE[testIdx].n}</span>
+                                            <div className="mt-8 flex items-center gap-2 animate-pulse-soft">
+                                                <i data-lucide="eye" className="w-4 h-4"></i>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Toca para recordar</span>
                                             </div>
-                                            <h2 className="text-5xl font-black uppercase text-indigo-900 leading-none">{DATABASE[testIdx].w}</h2>
-                                            <p className="text-xs font-bold text-slate-400 mt-4 text-center">"{DATABASE[testIdx].s}"</p>
+                                        </div>
+                                        
+                                        {/* Back: La Respuesta */}
+                                        <div className="absolute inset-0 bg-white rounded-[4rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-10 border-4 border-indigo-600">
+                                            <div className="w-full aspect-square bg-slate-50 rounded-[3rem] mb-6 overflow-hidden border-2 border-slate-100 shadow-inner flex items-center justify-center relative">
+                                                {images[testIdx] ? (
+                                                    <img src={images[testIdx]} className="w-full h-full object-cover" alt="mnemonic" />
+                                                ) : (
+                                                    <div className="text-center opacity-20">
+                                                        <i data-lucide="image" className="w-20 h-20 mx-auto mb-4"></i>
+                                                        <p className="text-[10px] font-black uppercase">Sin imagen generada</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h2 className="text-5xl font-black uppercase text-indigo-900 leading-none mb-4 tracking-tighter">{DATABASE[testIdx].w}</h2>
+                                            <p className="text-xs font-bold text-slate-500 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center italic leading-relaxed">"{DATABASE[testIdx].s}"</p>
                                         </div>
                                     </div>
                                 </div>
                                 {flipped && (
-                                    <button onClick={() => { setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} className="w-full mt-8 py-5 bg-indigo-600 text-white font-black rounded-[2.5rem] shadow-xl shadow-indigo-200 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                    <button 
+                                        onClick={() => { setFlipped(false); setTestIdx(Math.floor(Math.random()*100)); }} 
+                                        className="w-full mt-8 py-5 bg-indigo-600 text-white font-black rounded-[2.5rem] shadow-xl shadow-indigo-200 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 hover:bg-indigo-700 active:scale-95 transition-all"
+                                    >
                                         <i data-lucide="refresh-cw" className="w-4 h-4"></i> Siguiente Número
                                     </button>
                                 )}
@@ -249,25 +295,62 @@
                         )}
                     </main>
 
-                    {/* Settings Modal */}
+                    {/* Settings Modal (EL BOTÓN QUE SALVA TU APP) */}
                     {showConfig && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-6">
-                            <div className="bg-white rounded-[3rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95">
-                                <h2 className="text-3xl font-black mb-2 uppercase tracking-tighter">AI Ready</h2>
-                                <p className="text-xs text-slate-500 mb-6 font-bold uppercase tracking-widest leading-relaxed">Coge tu clave de Gemini y pégala aquí para activar el motor de imágenes de Campayo.</p>
-                                <input type="password" placeholder="AIzaSy..." className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl mb-4 font-mono text-sm outline-none focus:border-indigo-500" value={apiKey} onChange={e => setApiKey(e.target.value)} />
-                                <button onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowConfig(false); }} className="w-full py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl hover:bg-indigo-700 uppercase text-xs tracking-widest">Activar Academia</button>
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="block mt-6 text-[10px] text-center text-indigo-500 font-black uppercase underline tracking-widest">Obtener clave gratuita</a>
+                        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                            <div className="bg-white rounded-[3.5rem] p-10 max-w-sm w-full shadow-2xl border border-indigo-100 text-center">
+                                <div className="bg-indigo-100 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-lg">
+                                    <i data-lucide="shield-check" className="text-indigo-600 w-10 h-10"></i>
+                                </div>
+                                <h2 className="text-3xl font-black mb-2 uppercase tracking-tighter text-slate-900 leading-none">Activar Motor IA</h2>
+                                <p className="text-[11px] text-slate-500 mb-8 font-bold uppercase tracking-widest leading-relaxed">
+                                    Pega tu clave API de Gemini aquí.<br/>
+                                    <span className="text-rose-500 font-black">IMPORTANTE:</span> Los "Secrets" de GitHub no funcionan en la web, ponla aquí una sola vez.
+                                </p>
+                                <div className="relative mb-6">
+                                    <i data-lucide="key" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5"></i>
+                                    <input 
+                                        type="password" 
+                                        placeholder="Pega tu AIzaSy..." 
+                                        className="w-full pl-12 pr-6 py-5 bg-slate-50 border-2 border-slate-200 rounded-3xl font-mono text-sm outline-none focus:border-indigo-500 transition-all shadow-inner" 
+                                        value={apiKey} 
+                                        onChange={e => setApiKey(e.target.value)} 
+                                    />
+                                </div>
+                                <button 
+                                    onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowConfig(false); }} 
+                                    className="w-full py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl hover:bg-indigo-700 uppercase text-xs tracking-[0.2em] active:scale-95 transition-all"
+                                >
+                                    Guardar y Activar
+                                </button>
+                                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="block mt-8 text-[10px] text-center text-indigo-500 font-black uppercase underline tracking-widest hover:text-indigo-700 transition-colors">
+                                    Obtener clave gratuita en Google AI Studio
+                                </a>
                             </div>
                         </div>
                     )}
 
+                    {/* Loader */}
                     {loading && (
-                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-4 z-[200] border border-slate-100 animate-in slide-in-from-bottom-5">
-                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-600 w-6 h-6"></i>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-800">Esculpiendo asociación inverosímil...</span>
+                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl px-10 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-5 z-[200] border-2 border-indigo-100 animate-in slide-in-from-bottom-10">
+                            <div className="relative">
+                                <i data-lucide="sparkles" className="text-indigo-600 w-7 h-7 animate-pulse"></i>
+                                <i data-lucide="refresh-cw" className="absolute -top-1 -right-1 text-indigo-400 w-4 h-4 animate-spin"></i>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-800 leading-none">Bohemio Academy AI</span>
+                                <span className="text-[9px] text-slate-400 font-bold tracking-widest mt-1 uppercase italic">Esculpiendo imagen de Campayo...</span>
+                            </div>
                         </div>
                     )}
+
+                    <footer className="bg-white border-t border-slate-100 p-8 text-center mt-auto">
+                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em] flex items-center justify-center gap-4">
+                            <span>Kaizen: 1% mejor cada día</span>
+                            <span className="text-slate-200">•</span>
+                            <span>Mente Prodigiosa</span>
+                        </p>
+                    </footer>
                 </div>
             );
         };
