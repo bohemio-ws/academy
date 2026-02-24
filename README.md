@@ -1,2 +1,0 @@
-# academy
-app mente prodigiosa
