@@ -3,73 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bohemio Academy Pro - Casilleros Mentales</title>
+    <title>Bohemio Academy Pro - Casillero 0-99</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
         .backface-hidden { backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
-        .card-container { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-[#f8fafc] text-slate-900">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // Configuración de la API de Gemini (Se inyecta en tiempo de ejecución)
-        const apiKey = ""; 
-
-        // Base de datos completa optimizada de tus archivos
+        // BASE DE DATOS MAESTRA 0-99 (Sistema Fonético Campayo)
         const DATABASE = [
-            { n: 0, l: "R", w: "ARO" }, { n: 1, l: "T, D", w: "HADA" }, { n: 2, l: "N", w: "NOE" },
-            { n: 3, l: "M", w: "HUMO" }, { n: 4, l: "C, K, Q", w: "K.O." }, { n: 5, l: "L", w: "ALA" },
-            { n: 6, l: "S, Z", w: "AS" }, { n: 7, l: "F", w: "UFO" }, { n: 8, l: "CH, J, G", w: "HACHA" },
-            { n: 9, l: "V, B, P", w: "AVE" }, { n: 10, l: "TR", w: "TORO" }, { n: 11, l: "TT", w: "TETA" },
-            { n: 12, l: "TN", w: "TUNO" }, { n: 13, l: "TM", w: "TIMO" }, { n: 14, l: "TC", w: "TACO" },
-            { n: 15, l: "TL", w: "TELA" }, { n: 16, l: "TZ", w: "TAZA" }, { n: 17, l: "TF", w: "TUFO" },
-            { n: 18, l: "TCH", w: "TECHO" }, { n: 19, l: "TP", w: "TAPA" }, { n: 20, l: "NR", w: "NORIA" },
-            { n: 21, l: "ND", w: "NIDO" }, { n: 22, l: "NÑ", w: "NIÑA" }, { n: 23, l: "NM", w: "NEMO" },
-            { n: 24, l: "NC", w: "NUCA" }, { n: 25, l: "NL", w: "NILO" }, { n: 26, l: "NS", w: "NASA" },
-            { n: 27, l: "NF", w: "NIFE" }, { n: 28, l: "NCH", w: "NICHO" }, { n: 29, l: "NB", w: "NUBE" },
-            { n: 30, l: "MR", w: "MAR" }, { n: 31, l: "MT", w: "MOTO" }, { n: 32, l: "MN", w: "MINA" },
-            { n: 33, l: "MM", w: "MAMA" }, { n: 34, l: "MC", w: "MOCO" }, { n: 40, l: "CR", w: "CURA" },
-            { n: 41, l: "CT", w: "CATA" }, { n: 42, l: "CN", w: "CANA" }, { n: 43, l: "CM", w: "CAMA" },
-            { n: 44, l: "CC", w: "COCO" }, { n: 50, l: "LR", w: "LORO" }, { n: 51, l: "LT", w: "LATA" },
-            { n: 52, l: "LN", w: "LUNA" }, { n: 53, l: "LM", w: "LIMA" }, { n: 54, l: "LC", w: "LACA" },
-            { n: 60, l: "SR", w: "SOR" }, { n: 61, l: "ST", w: "SETA" }, { n: 62, l: "SN", w: "SENA" },
-            { n: 63, l: "SM", w: "SUMA" }
+            { n: 0, l: "R", w: "ARO" }, { n: 1, l: "T, D", w: "HADA" }, { n: 2, l: "N", w: "NOE" }, { n: 3, l: "M", w: "HUMO" }, { n: 4, l: "C, K, Q", w: "K.O." }, { n: 5, l: "L", w: "ALA" }, { n: 6, l: "S, Z", w: "AS" }, { n: 7, l: "F", w: "UFO" }, { n: 8, l: "CH, J, G", w: "HACHA" }, { n: 9, l: "V, B, P", w: "AVE" },
+            { n: 10, l: "TR", w: "TORO" }, { n: 11, l: "TT", w: "TETA" }, { n: 12, l: "TN", w: "TUNO" }, { n: 13, l: "TM", w: "TIMO" }, { n: 14, l: "TC", w: "TACO" }, { n: 15, l: "TL", w: "TELA" }, { n: 16, l: "TZ", w: "TAZA" }, { n: 17, l: "TF", w: "TUFO" }, { n: 18, l: "TCH", w: "TECHO" }, { n: 19, l: "TP", w: "TAPA" },
+            { n: 20, l: "NR", w: "NORIA" }, { n: 21, l: "ND", w: "NIDO" }, { n: 22, l: "NÑ", w: "NIÑA" }, { n: 23, l: "NM", w: "NEMO" }, { n: 24, l: "NC", w: "NUCA" }, { n: 25, l: "NL", w: "NILO" }, { n: 26, l: "NS", w: "NASA" }, { n: 27, l: "NF", w: "NIFE" }, { n: 28, l: "NCH", w: "NICHO" }, { n: 29, l: "NB", w: "NUBE" },
+            { n: 30, l: "MR", w: "MAR" }, { n: 31, l: "MT", w: "MOTO" }, { n: 32, l: "MN", w: "MINA" }, { n: 33, l: "MM", w: "MAMA" }, { n: 34, l: "MC", w: "MOCO" }, { n: 35, l: "ML", w: "MULA" }, { n: 36, l: "MS", w: "MESA" }, { n: 37, l: "MF", w: "MAFIA" }, { n: 38, l: "MCH", w: "MECHA" }, { n: 39, l: "MP", w: "MOP/MAPA" },
+            { n: 40, l: "CR", w: "CURA" }, { n: 41, l: "CT", w: "CATA" }, { n: 42, l: "CN", w: "CANA" }, { n: 43, l: "CM", w: "CAMA" }, { n: 44, l: "CC", w: "COCO" }, { n: 45, l: "CL", w: "COLA" }, { n: 46, l: "CS", w: "CASA" }, { n: 47, l: "CF", w: "CAFE" }, { n: 48, l: "CCH", w: "COCHE" }, { n: 49, l: "CB", w: "CUBA" },
+            { n: 50, l: "LR", w: "LORO" }, { n: 51, l: "LT", w: "LATA" }, { n: 52, l: "LN", w: "LUNA" }, { n: 53, l: "LM", w: "LIMA" }, { n: 54, l: "LC", w: "LACA" }, { n: 55, l: "LL", w: "LULU" }, { n: 56, l: "LS", w: "LOSA" }, { n: 57, l: "LF", w: "ALFA" }, { n: 58, l: "LCH", w: "LUCHO" }, { n: 59, l: "LB", w: "LOBA" },
+            { n: 60, l: "SR", w: "SOR" }, { n: 61, l: "ST", w: "SETA" }, { n: 62, l: "SN", w: "SENA" }, { n: 63, l: "SM", w: "SUMA" }, { n: 64, l: "SC", w: "SACO" }, { n: 65, l: "SL", w: "SOLA" }, { n: 66, l: "SS", label: "SESO" }, { n: 67, l: "SF", w: "SOFA" }, { n: 68, l: "SCH", w: "SOJA" }, { n: 69, l: "SB", w: "SAPO" },
+            { n: 70, l: "FR", w: "FARO" }, { n: 71, l: "FT", w: "FOTO" }, { n: 72, l: "FN", w: "FAUNA" }, { n: 73, l: "FM", w: "FAMA" }, { n: 74, l: "FC", w: "FOCA" }, { n: 75, l: "FL", w: "FILA" }, { n: 76, l: "FS", w: "FOSA" }, { n: 77, l: "FF", w: "FOFO" }, { n: 78, l: "FCH", w: "FICHA" }, { n: 79, l: "FB", w: "FABA" },
+            { n: 80, l: "CHR", w: "CHORRO" }, { n: 81, l: "CHT", w: "CHATA" }, { n: 82, l: "CHN", w: "CHINA" }, { n: 83, l: "CHM", w: "CHAMA" }, { n: 84, l: "CHC", w: "CHICA" }, { n: 85, l: "CHL", w: "CHULO" }, { n: 86, l: "CHS", w: "CHAS" }, { n: 87, l: "CHF", w: "CHUFA" }, { n: 88, l: "CHCH", w: "CHUCHO" }, { n: 89, l: "CHB", w: "CHIVO" },
+            { n: 90, l: "BR/PR", w: "BARRA" }, { n: 91, l: "BT", w: "BOTA" }, { n: 92, l: "VN", w: "VINO" }, { n: 93, l: "PM", w: "PUMA" }, { n: 94, l: "VC", w: "VACA" }, { n: 95, l: "VL", w: "VELA" }, { n: 96, l: "VS", w: "VASO" }, { n: 97, l: "VF", w: "VIFA" }, { n: 98, l: "BCH", w: "BACHE" }, { n: 99, l: "PP", w: "PIPA" }
         ];
 
         const App = () => {
             const [view, setView] = useState('gallery');
-            const [images, setImages] = useState({});
+            const [activeSection, setActiveSection] = useState(0); // 0 = 0-9, 1 = 10-19...
+            const [images, setImages] = useState(() => JSON.parse(localStorage.getItem('saved_images') || '{}'));
+            const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
+            const [showSettings, setShowSettings] = useState(!apiKey);
             const [loading, setLoading] = useState(false);
-            const [search, setSearch] = useState('');
             const [trainIdx, setTrainIdx] = useState(0);
             const [flipped, setFlipped] = useState(false);
             const [stats, setStats] = useState({ ok: 0, total: 0 });
 
+            useEffect(() => {
+                localStorage.setItem('saved_images', JSON.stringify(images));
+            }, [images]);
+
             const generateImage = async (word, id) => {
-                if (loading) return;
+                if (!apiKey) { setShowSettings(true); return; }
                 setLoading(true);
                 try {
-                    // DIRECTRIZ CAMPAYO: Exageración, acción, color, absurdo.
-                    const prompt = `A surreal, bizarre, and highly exaggerated 3D mnemonic illustration of "${word}". Incredible proportions, vibrant cinematic colors, dynamic movement, weird perspective, isolated on white background. Mnemonic art style. The object should look shocking or funny.`;
+                    // DIRECTRIZ CAMPAYO: Inverosímil, exagerado, acción, color.
+                    const prompt = `A highly bizarre, surreal, and exaggerated 3D mnemonic illustration of "${word}". 
+                    Distorted proportions, cinematic vibrant colors, extreme action, 
+                    white studio background, mnemonic art style. Must be shocking to the eye.`;
 
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            instances: [{ prompt: prompt }],
+                            instances: [{ prompt }],
                             parameters: { sampleCount: 1 }
                         })
                     });
@@ -77,134 +77,180 @@
                     if (data.predictions?.[0]) {
                         setImages(prev => ({ ...prev, [id]: `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}` }));
                     }
-                } catch (e) {
-                    console.error("Error Generando Imagen:", e);
-                } finally {
-                    setLoading(false);
-                }
+                } catch (e) { alert("Error API. Revisa tu clave."); }
+                finally { setLoading(false); }
             };
 
-            const filtered = useMemo(() => 
-                DATABASE.filter(i => i.n.toString().includes(search) || i.w.toLowerCase().includes(search.toLowerCase()))
-            , [search]);
+            const sections = [
+                "0-9", "10-19", "20-29", "30-39", "40-49", 
+                "50-59", "60-69", "70-79", "80-89", "90-99"
+            ];
+
+            const currentData = DATABASE.slice(activeSection * 10, (activeSection + 1) * 10);
+
+            const startRandomTest = () => {
+                const randomId = Math.floor(Math.random() * 100);
+                setTrainIdx(randomId);
+                setFlipped(false);
+                setView('train');
+            };
 
             return (
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col bg-[#f8fafc]">
                     {/* Header */}
-                    <header className="bg-indigo-900 text-white p-4 shadow-xl sticky top-0 z-50">
-                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                    <header className="bg-indigo-900 text-white p-4 sticky top-0 z-[60] shadow-2xl">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="bg-white p-2 rounded-xl">
-                                    <i data-lucide="brain" class="text-indigo-900 w-6 h-6"></i>
+                                <div className="bg-white p-2 rounded-2xl text-indigo-900 shadow-inner">
+                                    <i data-lucide="brain" className="w-6 h-6"></i>
                                 </div>
-                                <div>
-                                    <h1 className="font-black text-xl tracking-tighter uppercase">Bohemio Academy <span className="text-indigo-400">Pro</span></h1>
-                                    <p className="text-[10px] font-bold tracking-[0.3em] opacity-70">METODO CAMPAYO + AI</p>
+                                <div className="leading-none">
+                                    <h1 className="font-black text-xl tracking-tighter uppercase">Bohemio Pro</h1>
+                                    <span className="text-[10px] font-bold text-indigo-300 tracking-[0.3em]">CASILLERO 0-99</span>
                                 </div>
                             </div>
                             
-                            <nav className="flex bg-indigo-950 p-1 rounded-xl border border-indigo-800">
-                                <button onClick={() => setView('gallery')} className={`px-6 py-2 rounded-lg text-xs font-black transition-all ${view === 'gallery' ? 'bg-indigo-600 text-white' : 'text-indigo-300 hover:text-white'}`}>GALERÍA</button>
-                                <button onClick={() => setView('train')} className={`px-6 py-2 rounded-lg text-xs font-black transition-all ${view === 'train' ? 'bg-indigo-600 text-white' : 'text-indigo-300 hover:text-white'}`}>ENTRENAR</button>
-                            </nav>
+                            <div className="flex bg-indigo-950 p-1 rounded-2xl border border-indigo-800">
+                                <button onClick={() => setView('gallery')} className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${view === 'gallery' ? 'bg-indigo-600' : 'text-indigo-400'}`}>BIBLIOTECA</button>
+                                <button onClick={() => setView('train')} className={`px-5 py-2 rounded-xl text-xs font-black transition-all ${view === 'train' ? 'bg-indigo-600' : 'text-indigo-400'}`}>ENTRENAR</button>
+                                <button onClick={() => setShowSettings(true)} className="p-2 ml-1 text-indigo-400 hover:text-white transition-colors"><i data-lucide="settings" className="w-5 h-5"></i></button>
+                            </div>
                         </div>
                     </header>
 
-                    {/* Main */}
-                    <main className="flex-grow max-w-6xl mx-auto w-full p-4 md:p-8">
+                    {/* API Settings Modal */}
+                    {showSettings && (
+                        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+                            <div className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
+                                <h2 className="text-2xl font-black mb-4 uppercase tracking-tighter">API IA de Google</h2>
+                                <input 
+                                    type="password"
+                                    placeholder="Pega tu API Key de Gemini..."
+                                    className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-4 font-mono text-sm outline-none focus:border-indigo-500 transition-all"
+                                    value={apiKey}
+                                    onChange={(e) => setApiKey(e.target.value)}
+                                />
+                                <button 
+                                    onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowSettings(false); }}
+                                    className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg hover:bg-indigo-700 uppercase text-xs tracking-widest"
+                                >
+                                    Guardar y Activar
+                                </button>
+                                <p className="mt-4 text-[10px] text-center text-slate-400 uppercase font-bold tracking-widest leading-relaxed">
+                                    Consigue tu clave gratis en <br/> <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-indigo-500 underline">AI Studio Google</a>
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <main className="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
                         {view === 'gallery' ? (
-                            <div className="space-y-8 animate-in fade-in duration-700">
-                                <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                        <i data-lucide="search" className="w-5 h-5"></i>
-                                    </div>
-                                    <input 
-                                        className="w-full pl-12 pr-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-200 outline-none focus:ring-4 focus:ring-indigo-100 text-lg font-bold transition-all" 
-                                        placeholder="Busca un número o palabra (ej: 22)..."
-                                        value={search}
-                                        onChange={e => setSearch(e.target.value)}
-                                    />
+                            <div className="space-y-8 animate-in fade-in duration-500">
+                                {/* Navegación de Secciones (Tablas) */}
+                                <div className="flex overflow-x-auto gap-2 pb-4 hide-scrollbar snap-x">
+                                    {sections.map((s, idx) => (
+                                        <button 
+                                            key={s}
+                                            onClick={() => setActiveSection(idx)}
+                                            className={`flex-shrink-0 px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all snap-start ${activeSection === idx ? 'bg-indigo-600 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200'}`}
+                                        >
+                                            Sección {s}
+                                        </button>
+                                    ))}
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                                    {filtered.map(item => (
-                                        <div key={item.n} className="bg-white rounded-[2rem] p-3 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-400 transition-all group relative overflow-hidden">
-                                            <div className="aspect-square bg-slate-50 rounded-2xl mb-4 relative flex items-center justify-center overflow-hidden border border-slate-50 shadow-inner">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-6">
+                                    {currentData.map(item => (
+                                        <div key={item.n} className="bg-white rounded-[2.5rem] p-3 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 group">
+                                            <div className="aspect-square bg-slate-50 rounded-[2rem] relative overflow-hidden flex items-center justify-center border border-slate-50 mb-4">
                                                 {images[item.n] ? (
-                                                    <img src={images[item.n]} className="w-full h-full object-cover animate-in zoom-in-95 duration-500" alt={item.w} />
+                                                    <img src={images[item.n]} className="w-full h-full object-cover" alt={item.w} />
                                                 ) : (
                                                     <i data-lucide="image" className="text-slate-200 w-12 h-12"></i>
                                                 )}
-                                                <div className="absolute top-0 left-0 bg-slate-900 text-white text-[12px] font-black px-3 py-1 rounded-br-2xl">{item.n}</div>
+                                                <div className="absolute top-0 left-0 bg-slate-900 text-white text-[12px] font-black px-3 py-1.5 rounded-br-2xl">{item.n}</div>
                                                 <button 
                                                     onClick={() => generateImage(item.w, item.n)}
                                                     className="absolute inset-0 bg-indigo-900/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2"
                                                 >
                                                     <i data-lucide="sparkles" className="text-white w-6 h-6"></i>
-                                                    <span className="text-white text-[10px] font-black uppercase tracking-widest text-center px-4">Crear Imagen Campayo</span>
+                                                    <span className="text-white text-[9px] font-black uppercase text-center px-4">Crear Mnemotecnia</span>
                                                 </button>
                                             </div>
-                                            <div className="text-center">
-                                                <h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">{item.w}</h3>
-                                                <p className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-50 inline-block px-2 py-0.5 rounded-full mt-1">{item.l}</p>
+                                            <div className="text-center pb-2">
+                                                <h3 className="text-sm font-black uppercase tracking-tighter text-slate-800">{item.w}</h3>
+                                                <p className="text-[10px] font-mono font-bold text-indigo-400 bg-indigo-50 inline-block px-3 py-1 rounded-full mt-2 tracking-widest">{item.l}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+                                
+                                <div className="flex justify-center pt-10">
+                                    <button 
+                                        onClick={startRandomTest}
+                                        className="bg-slate-900 text-white px-10 py-5 rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] shadow-2xl flex items-center gap-4 hover:bg-slate-800 active:scale-95 transition-all"
+                                    >
+                                        <i data-lucide="shuffle" className="w-5 h-5"></i> Test Aleatorio 0-99
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div className="max-w-md mx-auto py-4 animate-in zoom-in-95 duration-500">
-                                <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm border">
-                                    <div className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase italic">
-                                        <i data-lucide="zap" className="w-4 h-4 fill-indigo-600"></i> Kaizen Training
+                                <div className="flex justify-between items-center mb-8 px-4">
+                                    <button onClick={() => setView('gallery')} className="text-slate-400 hover:text-slate-900 transition-colors">
+                                        <i data-lucide="arrow-left" className="w-6 h-6"></i>
+                                    </button>
+                                    <div className="text-[11px] font-black uppercase text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100 flex items-center gap-2">
+                                        <i data-lucide="trophy" className="w-3 h-3"></i> {stats.ok} / {stats.total}
                                     </div>
-                                    <div className="text-sm font-black text-slate-400">
-                                        Puntos: <span className="text-indigo-600 ml-1">{stats.ok}/{stats.total}</span>
-                                    </div>
+                                    <button onClick={startRandomTest} className="text-indigo-600"><i data-lucide="refresh-cw" className="w-5 h-5"></i></button>
                                 </div>
 
-                                <div className="w-full aspect-[3/4] perspective-1000">
+                                <div className="w-full aspect-[3/4] perspective-1000 group">
                                     <div 
-                                        className={`relative w-full h-full card-container transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`}
+                                        className={`relative w-full h-full card-inner transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`}
                                         onClick={() => !flipped && setFlipped(true)}
                                     >
-                                        {/* Front */}
-                                        <div className="absolute inset-0 bg-indigo-600 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[12px] border-indigo-500">
-                                            <span className="text-[10rem] font-black leading-none drop-shadow-2xl">{DATABASE[trainIdx % DATABASE.length].n}</span>
-                                            <p className="mt-8 text-indigo-200 text-xs font-black uppercase tracking-[0.4em] opacity-50">Visualiza la imagen</p>
+                                        {/* Cara Número */}
+                                        <div className="absolute inset-0 bg-indigo-700 rounded-[3.5rem] shadow-2xl flex flex-col items-center justify-center text-white backface-hidden border-[12px] border-indigo-600">
+                                            <span className="text-[10rem] font-black drop-shadow-2xl">{DATABASE[trainIdx].n}</span>
+                                            <div className="mt-8 flex flex-col items-center gap-2 opacity-50">
+                                                <i data-lucide="eye" className="w-6 h-6"></i>
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Toca para recordar</span>
+                                            </div>
                                         </div>
                                         
-                                        {/* Back */}
-                                        <div className="absolute inset-0 bg-white rounded-[3rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-8 border-4 border-indigo-600">
-                                            <div className="w-full aspect-square bg-slate-50 rounded-3xl mb-8 overflow-hidden flex items-center justify-center border-2 border-slate-100 shadow-inner">
-                                                {images[DATABASE[trainIdx % DATABASE.length].n] ? (
-                                                    <img src={images[DATABASE[trainIdx % DATABASE.length].n]} className="w-full h-full object-cover" alt="mnemonic" />
+                                        {/* Cara Respuesta */}
+                                        <div className="absolute inset-0 bg-white rounded-[3.5rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-8 border-4 border-indigo-600">
+                                            <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] mb-8 overflow-hidden flex items-center justify-center border-2 border-slate-100 shadow-inner">
+                                                {images[trainIdx] ? (
+                                                    <img src={images[trainIdx]} className="w-full h-full object-cover" alt="mnemonic" />
                                                 ) : (
-                                                    <div className="text-center px-4">
-                                                        <i data-lucide="image" className="text-slate-100 w-16 h-16 mx-auto mb-4"></i>
-                                                        <p className="text-[10px] text-slate-400 font-bold uppercase">Usa la biblioteca para generar la imagen primero</p>
+                                                    <div className="text-center px-8 opacity-30">
+                                                        <i data-lucide="image" className="w-16 h-16 mx-auto mb-4"></i>
+                                                        <p className="text-[10px] font-black uppercase">Sin imagen Campayo</p>
                                                     </div>
                                                 )}
                                             </div>
-                                            <h2 className="text-5xl font-black uppercase text-indigo-900 tracking-tighter">{DATABASE[trainIdx % DATABASE.length].w}</h2>
-                                            <p className="text-xl font-mono text-slate-400 mt-2 font-bold">{DATABASE[trainIdx % DATABASE.length].l}</p>
+                                            <h2 className="text-5xl font-black uppercase text-indigo-900 tracking-tighter">{DATABASE[trainIdx].w}</h2>
+                                            <p className="text-2xl font-mono text-slate-400 mt-2 font-bold tracking-[0.3em]">{DATABASE[trainIdx].l}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {flipped && (
-                                    <div className="grid grid-cols-2 gap-4 mt-8 animate-in slide-in-from-bottom-4 duration-500">
+                                    <div className="grid grid-cols-2 gap-4 mt-10 animate-in slide-in-from-bottom-4">
                                         <button 
-                                            onClick={() => { setStats(s => ({...s, total: s.total+1})); setFlipped(false); setTrainIdx(p => (p+1)%DATABASE.length); }}
-                                            className="py-5 bg-white text-slate-400 font-black rounded-3xl border-2 border-slate-100 uppercase text-xs hover:bg-slate-50 shadow-sm"
+                                            onClick={() => { setStats(s => ({...s, total: s.total+1})); startRandomTest(); }}
+                                            className="py-5 bg-white text-slate-400 font-black rounded-[2rem] border-2 border-slate-100 uppercase text-[11px] shadow-sm active:scale-95 transition-all"
                                         >
                                             Repasar
                                         </button>
                                         <button 
-                                            onClick={() => { setStats(s => ({...s, ok: s.ok+1, total: s.total+1})); setFlipped(false); setTrainIdx(p => (p+1)%DATABASE.length); }}
-                                            className="py-5 bg-indigo-600 text-white font-black rounded-3xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all uppercase text-xs flex items-center justify-center gap-2"
+                                            onClick={() => { setStats(s => ({...s, ok: s.ok+1, total: s.total+1})); startRandomTest(); }}
+                                            className="py-5 bg-indigo-600 text-white font-black rounded-[2rem] shadow-xl shadow-indigo-100 active:scale-95 transition-all uppercase text-[11px] flex items-center justify-center gap-2"
                                         >
-                                            <i data-lucide="check-circle" className="w-5 h-5"></i> ¡Dominado!
+                                            <i data-lucide="check" className="w-4 h-4"></i> ¡Lo tengo!
                                         </button>
                                     </div>
                                 )}
@@ -212,32 +258,23 @@
                         )}
                     </main>
 
-                    {/* Footer */}
-                    <footer className="bg-white border-t border-slate-200 p-6 text-center">
-                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                            "Si es normal, se olvida. Si es raro, es eterno" — Ramón Campayo
-                        </p>
-                    </footer>
-
-                    {/* Cargador de IA */}
+                    {/* Global Loader AI */}
                     {loading && (
-                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-4 z-[100] border border-slate-700">
-                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-400 w-5 h-5"></i>
-                            <span className="text-xs font-black uppercase tracking-widest">IA Esculpiendo imagen absurda...</span>
+                        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-5 rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] flex items-center gap-5 z-[200] border border-slate-700 animate-in zoom-in-95 duration-300">
+                            <i data-lucide="refresh-cw" className="animate-spin text-indigo-400 w-6 h-6"></i>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none">IA Bohemio Academy</span>
+                                <span className="text-[9px] text-slate-400 uppercase font-bold tracking-widest mt-1 italic">Esculpiendo imagen absurda...</span>
+                            </div>
                         </div>
                     )}
                 </div>
             );
         };
 
-        // Renderizado e Inicialización de Iconos
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-
-        // Re-iniciar Lucide cada vez que el DOM cambie (aproximación simple)
-        setInterval(() => {
-            if (window.lucide) window.lucide.createIcons();
-        }, 1000);
+        setInterval(() => window.lucide?.createIcons(), 500);
     </script>
 </body>
 </html>
