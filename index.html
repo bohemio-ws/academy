@@ -24,11 +24,14 @@
 <body>
     <div id="root"></div>
 
+    <!-- FIREBASE SERVICES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // CONFIGURACIÓN MANUAL PARA EXTERIOR (GitHub/Web)
+        // Kenny: Sustituye los valores vacíos con los de tu consola de Firebase
         const manualConfig = {
             apiKey: "AIzaSyCS52B7FNSgSlJTxU5pgSaVFc4eYHnCeeg", 
             authDomain: "bohemio-academy.firebaseapp.com",
@@ -36,28 +39,31 @@
             storageBucket: "bohemio-academy.firebasestorage.app",
             messagingSenderId: "179291455529",
             appId: "1:179291455529:web:1a026c76fda908f1c59c38",
-            measurementId: "G-QHMKGJ8FEV"
+  measurementId: "G-QHMKGJ8FEV"
         };
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : manualConfig;
+        // Detector de entorno: Usa la config inyectada si existe, si no, usa la manual
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : (manualConfig.apiKey ? manualConfig : null);
 
-        try {
+        if (firebaseConfig) {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'bohemio-academy-kenny';
             window.fb = { auth, db, appId, signInAnonymously, onAuthStateChanged, signInWithCustomToken, doc, setDoc, collection, onSnapshot };
-        } catch (e) {
-            console.error("Error inicializando Firebase:", e);
-            window.fb = null;
+        } else {
+            window.fb = null; // Indica que falta configuración
         }
     </script>
 
+    <!-- REACT APPLICATION -->
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Kenny: Pon aquí tu llave para esculpir. Después de esculpir todo, puedes dejarla vacía ""
-        const googleApiKey = "AIzaSyCS52B7FNSgSlJTxU5pgSaVFc4eYHnCeeg"; 
+        // Kenny: Pon aquí tu llave de Google AI Studio para que funcione el botón de esculpir
+        const googleApiKey = "AIzaSyDABwP-2cPLimjvOh6DvWBC_m1sWqSldic"; 
 
         const DATABASE = [
             { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego espectacular con rayos pequeños tesla." },
@@ -173,10 +179,23 @@
             const [testIdx, setTestIdx] = useState(0);
             const [flipped, setFlipped] = useState(false);
 
+            // CONTROL DE SEGURIDAD: Si no hay Firebase, mostramos aviso
+            if (!window.fb) {
+                return (
+                    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-10 text-center">
+                        <div className="bg-red-500/10 border border-red-500 p-8 rounded-3xl max-w-lg">
+                            <h2 className="text-red-500 text-2xl font-black mb-4 uppercase">Configuración Incompleta</h2>
+                            <p className="text-slate-300 mb-6">Kenny, para que la app funcione fuera de este chat, debes editar el archivo e introducir tus llaves de <strong>Firebase</strong> en la variable <code>manualConfig</code>.</p>
+                            <div className="bg-slate-950 p-4 rounded-xl text-left text-xs font-mono text-indigo-400 overflow-x-auto">
+                                manualConfig = &#123; apiKey: "AIza..." &#125;
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             useEffect(() => {
-                if (!window.fb) return;
                 const { auth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } = window.fb;
-                
                 const initAuth = async () => {
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -184,9 +203,7 @@
                         } else {
                             await signInAnonymously(auth);
                         }
-                    } catch (e) { 
-                        setStatus("❌ Error Auth: Activa 'Acceso Anónimo' en tu consola Firebase"); 
-                    }
+                    } catch (e) { setStatus("❌ Error Auth: Revisa tus credenciales"); }
                 };
                 initAuth();
                 const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -194,17 +211,16 @@
             }, []);
 
             useEffect(() => {
-                if (!user || !window.fb) return;
+                if (!user) return;
                 const { db, appId, collection, onSnapshot } = window.fb;
                 const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images');
-                
                 const unsubscribe = onSnapshot(colRef, 
                     (snap) => {
                         const data = {};
                         snap.forEach(doc => data[doc.id] = doc.data().url);
                         setImages(data);
                     },
-                    (err) => setStatus("❌ Error Firestore: Revisa tus reglas de seguridad")
+                    (err) => setStatus("❌ Error de permisos")
                 );
                 return () => unsubscribe();
             }, [user]);
@@ -216,28 +232,25 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         canvas.width = 512; canvas.height = 512;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, 512, 512);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                        canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
                     };
                 });
             };
 
             const generateOne = async (item) => {
                 if (loading || !user) return;
-                
-                // Usamos la clave local si existe, si no la global del entorno
                 const keyToUse = googleApiKey || (typeof apiKey !== 'undefined' ? apiKey : "");
                 
                 if (!keyToUse) {
-                    setStatus("❌ No hay clave de IA. Ponla en 'googleApiKey'.");
+                    setStatus("❌ Falta Google API Key");
                     return;
                 }
 
                 setLoading(true);
-                setStatus(`Invocando IA para: ${item.w}...`);
+                setStatus(`Esculpiendo: ${item.w}...`);
                 
-                const prompt = `Unreal Engine 5 style mnemonic image: ${item.s}. Cinematic lighting, extreme detail, 8k, solid white background. No text.`;
+                const prompt = `Hyper-realistic surreal 3D mnemonic image: ${item.s}. Unreal Engine 5 render style, cinematic lighting, 8k, white studio background. Extremely memorable.`;
                 
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${keyToUse}`, {
@@ -256,15 +269,15 @@
                         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images', item.n.toString()), {
                             url: finalBase64, timestamp: Date.now()
                         });
-                        setStatus(`✅ ¡${item.w} esculpido con éxito!`);
+                        setStatus(`✅ ¡${item.w} esculpido!`);
                     } else {
-                        throw new Error("Respuesta IA vacía");
+                        throw new Error();
                     }
                 } catch (e) {
-                    setStatus(`❌ Error de IA: Verifica tu API Key`);
+                    setStatus(`❌ Error IA: Revisa tu API Key`);
                 } finally {
                     setLoading(false);
-                    setTimeout(() => setStatus(""), 4000);
+                    setTimeout(() => setStatus(""), 3000);
                 }
             };
 
@@ -281,17 +294,6 @@
 
             const blocks = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
 
-            if (!window.fb) {
-                return (
-                    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-10 text-center">
-                        <div className="bg-red-500/10 border border-red-500 p-8 rounded-3xl max-w-lg">
-                            <h2 className="text-red-500 text-2xl font-black mb-4 uppercase tracking-tighter">Fallo Crítico</h2>
-                            <p className="text-slate-300">No se ha podido conectar con Firebase. Revisa el código `manualConfig`.</p>
-                        </div>
-                    </div>
-                );
-            }
-
             return (
                 <div className="min-h-screen flex flex-col">
                     <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-xl border-b border-indigo-500/20">
@@ -301,7 +303,7 @@
                             </div>
                             <div>
                                 <h1 className="text-xl font-black tracking-tighter uppercase text-white leading-none">Bohemio Academy</h1>
-                                <span className="text-[10px] font-bold text-indigo-400 tracking-[0.3em] uppercase italic leading-none">KENNY INVESTIGADOR</span>
+                                <span className="text-[10px] font-bold text-indigo-400 tracking-[0.3em] uppercase italic leading-none">PROJECT BY KENNY</span>
                             </div>
                         </div>
                         <nav className="flex gap-2 bg-slate-800/80 p-1.5 rounded-xl border border-white/5">
@@ -311,7 +313,7 @@
                     </header>
 
                     {status && (
-                        <div className={`text-white text-[11px] font-bold text-center py-3 uppercase tracking-widest animate-pulse sticky top-[73px] z-40 ${status.includes('❌') ? 'bg-red-600 shadow-lg' : 'bg-indigo-600 shadow-lg'}`}>
+                        <div className={`text-white text-[11px] font-bold text-center py-3 uppercase tracking-widest animate-pulse sticky top-[73px] z-40 ${status.includes('❌') ? 'bg-red-600' : 'bg-indigo-600'}`}>
                             {status}
                         </div>
                     )}
@@ -328,18 +330,14 @@
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     {DATABASE.slice(activeBlock * 10, (activeBlock + 1) * 10).map(item => (
                                         <div key={item.n} className="bg-slate-800/30 rounded-[3rem] p-7 border border-white/5 shadow-2xl flex flex-col sm:flex-row gap-8 group overflow-hidden transition-all hover:border-indigo-500/50">
-                                            <div className="w-full sm:w-48 h-48 bg-slate-900 rounded-[2.5rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-white/5 group-hover:shadow-[0_0_30px_rgba(79,70,229,0.3)] transition-all">
-                                                {images[item.n] ? 
-                                                    <img src={images[item.n]} className="w-full h-full object-cover" /> : 
-                                                    <span className="text-6xl font-black text-slate-800">{item.n}</span>
-                                                }
+                                            <div className="w-full sm:w-48 h-48 bg-slate-900 rounded-[2.5rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-white/5">
+                                                {images[item.n] ? <img src={images[item.n]} className="w-full h-full object-cover" /> : <span className="text-5xl font-black text-slate-800">{item.n}</span>}
                                                 {isMaster && user && (
                                                     <button onClick={() => generateOne(item)} className="absolute inset-0 bg-indigo-900/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
                                                         <LucideIcon name="sparkles" className="text-white w-10 h-10 glow" />
                                                         <span className="text-[9px] text-white font-black uppercase">Esculpir IA</span>
                                                     </button>
                                                 )}
-                                                {loading && <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center backdrop-blur-sm"><div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div>}
                                             </div>
                                             <div className="flex flex-col justify-center flex-grow">
                                                 <div className="flex justify-between items-start mb-4 text-white">
@@ -390,7 +388,7 @@
                     </main>
 
                     <footer className="p-12 text-center border-t border-white/5 mt-auto opacity-30">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Bohemio Academy • Kenny Research</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Kenny Investigador • bohemio.ws/academy</p>
                     </footer>
                 </div>
             );
