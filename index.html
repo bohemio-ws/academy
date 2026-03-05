@@ -29,7 +29,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIGURACIÓN DE KENNY
         const manualConfig = {
             apiKey: "AIzaSyCS52B7FNSgSlJTxU5pgSaVFc4eYHnCeeg", 
             authDomain: "bohemio-academy.firebaseapp.com",
@@ -49,13 +48,12 @@
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'bohemio-academy-kenny';
             window.fb = { auth, db, appId, signInAnonymously, onAuthStateChanged, signInWithCustomToken, doc, setDoc, collection, onSnapshot };
         } catch (e) {
-            console.error("Error Firebase:", e);
             window.fb = null;
         }
     </script>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const DATABASE = [
             { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego espectacular con rayos pequeños tesla." },
@@ -77,7 +75,7 @@
             { n: 16, l: "TZ", w: "TAZA", s: "Una TAZA de la que sale café con tiburones hambrientos." },
             { n: 17, l: "TF", w: "TUFO", s: "Un TUFO gas verde de unas zapatillas deportivas que desmayan a una familia y sus mascotas ." },
             { n: 18, l: "TCH", w: "TECHO", s: "Un TECHO de la capilla sixtina que secuestran a los visitantes." },
-            { n: 19, l: "TP", w: "TAPA", s: "Una TAPA de alcantarilla escupida por un chorro de agua, encima un ninja." },
+            { n: 19, l: "TP", w: "TAPA", s: "Una TAPA de alcantarilla escupida por un choros de agua, encima un ninja." },
             { n: 20, l: "NR", w: "NORIA", s: "Una NORIA donde las cabinas son cabezas de león rugiendo." },
             { n: 21, l: "ND", w: "NIDO", s: "Un NIDO de huevos de oro que emiten rayos eléctricos." },
             { n: 22, l: "NÑ", w: "NIÑA", s: "Una NIÑA con ojos de fuego levantando un portaaviones." },
@@ -170,6 +168,7 @@
             const [isMaster, setIsMaster] = useState(false);
             const [testIdx, setTestIdx] = useState(0);
             const [flipped, setFlipped] = useState(false);
+            const [manualLink, setManualLink] = useState({});
 
             useEffect(() => {
                 if (!window.fb) return;
@@ -182,7 +181,7 @@
                             await signInAnonymously(auth);
                         }
                     } catch (e) { 
-                        setStatus("❌ Error Auth: Activa 'Acceso Anónimo' en Firebase"); 
+                        setStatus("❌ Activa el acceso anónimo en Firebase"); 
                     }
                 };
                 initAuth();
@@ -198,37 +197,53 @@
                     const data = {};
                     snap.forEach(doc => data[doc.id] = doc.data().url);
                     setImages(data);
-                }, (err) => setStatus("❌ Error Firestore: Reglas de seguridad"));
+                });
                 return () => unsubscribe();
             }, [user]);
 
-            // Esta función descarga la imagen y la vuelve BASE64 para guardado ETERNO
+            const saveManualUrl = async (n, url) => {
+                if (!url || !user) return;
+                setLoading(true);
+                try {
+                    const { db, appId, doc, setDoc } = window.fb;
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images', n.toString()), {
+                        url: url,
+                        timestamp: Date.now()
+                    });
+                    setStatus(`✅ Imagen ${n} guardada.`);
+                    setManualLink(prev => ({...prev, [n]: ""}));
+                } catch (e) {
+                    setStatus("❌ Error al guardar.");
+                } finally {
+                    setLoading(false);
+                    setTimeout(() => setStatus(""), 3000);
+                }
+            };
+
             const sculptImage = async (item) => {
                 if (loading || !user) return;
                 setLoading(true);
-                setStatus(`Invocando arte para: ${item.w}...`);
-
-                // Usamos Pollinations (Sin API Key)
-                const prompt = encodeURIComponent(`surreal 3d, cinematic lighting, ${item.s}, high definition, white background`);
-                const url = `https://image.pollinations.ai/prompt/${prompt}?width=512&height=512&nologo=true&seed=${Math.random()}`;
+                setStatus(`Invocando IA para: ${item.w}...`);
+                const prompt = encodeURIComponent(`high quality surreal 3d render, cinematic lighting, ${item.s}, clean white background, 8k, extremely detailed, vibrant colors`);
+                const pollinationsUrl = `https://image.pollinations.ai/prompt/${prompt}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(pollinationsUrl)}`;
 
                 try {
-                    const response = await fetch(url);
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error("Error proxy");
                     const blob = await response.blob();
-                    const reader = new FileReader();
-                    
                     const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
                         reader.onloadend = () => resolve(reader.result);
                         reader.readAsDataURL(blob);
                     });
-
                     const { db, appId, doc, setDoc } = window.fb;
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images', item.n.toString()), {
                         url: base64, timestamp: Date.now()
                     });
-                    setStatus(`✅ ¡${item.w} guardado permanentemente!`);
+                    setStatus(`✅ Esculpido exitoso.`);
                 } catch (e) {
-                    setStatus("❌ Error al esculpir. Inténtalo de nuevo.");
+                    setStatus("❌ Fallo IA. Usa la opción de enlace manual.");
                 } finally {
                     setLoading(false);
                     setTimeout(() => setStatus(""), 4000);
@@ -248,20 +263,11 @@
 
             const blocks = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
 
-            if (!window.fb) return (
-                <div className="min-h-screen bg-slate-900 flex items-center justify-center p-10 text-center">
-                    <div className="bg-red-500/10 border border-red-500 p-8 rounded-3xl max-w-lg shadow-2xl">
-                        <h2 className="text-red-500 text-2xl font-black mb-4 uppercase">Error de Conexión</h2>
-                        <p className="text-slate-300">Revisa tus credenciales de Firebase en el código.</p>
-                    </div>
-                </div>
-            );
-
             return (
                 <div className="min-h-screen flex flex-col">
                     <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-xl border-b border-indigo-500/20">
                         <div className="flex items-center gap-4">
-                            <div className={`bg-indigo-600 p-2.5 rounded-2xl cursor-pointer hover:scale-110 transition-all ${isMaster ? 'ring-4 ring-indigo-400' : ''}`} onClick={() => setIsMaster(!isMaster)}>
+                            <div className={`bg-indigo-600 p-2.5 rounded-2xl cursor-pointer hover:scale-110 transition-all ${isMaster ? 'ring-4 ring-indigo-400 shadow-[0_0_20px_rgba(79,70,229,0.3)]' : ''}`} onClick={() => setIsMaster(!isMaster)}>
                                 <LucideIcon name="brain-circuit" className="w-6 h-6 text-white" />
                             </div>
                             <div>
@@ -299,10 +305,26 @@
                                                     <span className="text-6xl font-black text-slate-800">{item.n}</span>
                                                 }
                                                 {isMaster && user && (
-                                                    <button onClick={() => sculptImage(item)} className="absolute inset-0 bg-indigo-900/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
-                                                        <LucideIcon name="sparkles" className="text-white w-10 h-10 glow" />
-                                                        <span className="text-[9px] text-white font-black uppercase">Esculpir Ahora</span>
-                                                    </button>
+                                                    <div className="absolute inset-0 bg-indigo-900/90 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-2">
+                                                        <button onClick={() => sculptImage(item)} className="bg-white/10 hover:bg-white/20 w-full py-2 rounded-xl text-[9px] font-black uppercase flex items-center justify-center gap-2">
+                                                            <LucideIcon name="sparkles" className="w-3 h-3" /> Auto IA
+                                                        </button>
+                                                        <div className="w-full flex flex-col gap-1">
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Pegar enlace..." 
+                                                                className="w-full bg-slate-950 border border-white/10 p-2 rounded-xl text-[9px] text-indigo-300 outline-none"
+                                                                value={manualLink[item.n] || ""}
+                                                                onChange={(e) => setManualLink({...manualLink, [item.n]: e.target.value})}
+                                                            />
+                                                            <button 
+                                                                onClick={() => saveManualUrl(item.n, manualLink[item.n])}
+                                                                className="bg-indigo-500 hover:bg-indigo-400 w-full py-2 rounded-xl text-[9px] font-black uppercase"
+                                                            >
+                                                                Guardar Link
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 )}
                                                 {loading && <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center backdrop-blur-sm"><div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div>}
                                             </div>
