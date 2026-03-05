@@ -201,6 +201,22 @@
                 return () => unsubscribe();
             }, [user]);
 
+            const copyPromptToClipboard = (scenario) => {
+                // KENNY: Este es el prompt optimizado. Está en inglés porque la IA lo entiende mejor.
+                const fullPrompt = `high quality 3d render, isometric style, ${scenario}, cinematic lighting, masterpiece, extremely detailed, vibrant colors, clean white background, 8k resolution, sharp focus`;
+                
+                // Creamos un elemento temporal para copiar (forma compatible con iframe)
+                const el = document.createElement('textarea');
+                el.value = fullPrompt;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                
+                setStatus(`📋 Prompt copiado al portapapeles`);
+                setTimeout(() => setStatus(""), 3000);
+            };
+
             const saveManualUrl = async (n, url) => {
                 if (!url || !user) return;
                 setLoading(true);
@@ -306,20 +322,25 @@
                                                 }
                                                 {isMaster && user && (
                                                     <div className="absolute inset-0 bg-indigo-900/90 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-2">
-                                                        <button onClick={() => sculptImage(item)} className="bg-white/10 hover:bg-white/20 w-full py-2 rounded-xl text-[9px] font-black uppercase flex items-center justify-center gap-2">
-                                                            <LucideIcon name="sparkles" className="w-3 h-3" /> Auto IA
-                                                        </button>
+                                                        <div className="w-full flex gap-1">
+                                                            <button onClick={() => sculptImage(item)} className="bg-white/10 hover:bg-white/20 flex-1 py-2 rounded-xl text-[8px] font-black uppercase flex items-center justify-center gap-1">
+                                                                <LucideIcon name="sparkles" className="w-3 h-3" /> Auto IA
+                                                            </button>
+                                                            <button onClick={() => copyPromptToClipboard(item.s)} className="bg-amber-500/20 hover:bg-amber-500/40 flex-1 py-2 rounded-xl text-[8px] font-black uppercase flex items-center justify-center gap-1 text-amber-200">
+                                                                <LucideIcon name="copy" className="w-3 h-3" /> Copiar Prompt
+                                                            </button>
+                                                        </div>
                                                         <div className="w-full flex flex-col gap-1">
                                                             <input 
                                                                 type="text" 
-                                                                placeholder="Pegar enlace..." 
+                                                                placeholder="Pegar enlace de imagen..." 
                                                                 className="w-full bg-slate-950 border border-white/10 p-2 rounded-xl text-[9px] text-indigo-300 outline-none"
                                                                 value={manualLink[item.n] || ""}
                                                                 onChange={(e) => setManualLink({...manualLink, [item.n]: e.target.value})}
                                                             />
                                                             <button 
                                                                 onClick={() => saveManualUrl(item.n, manualLink[item.n])}
-                                                                className="bg-indigo-500 hover:bg-indigo-400 w-full py-2 rounded-xl text-[9px] font-black uppercase"
+                                                                className="bg-indigo-500 hover:bg-indigo-400 w-full py-2 rounded-xl text-[9px] font-black uppercase shadow-lg shadow-indigo-500/20"
                                                             >
                                                                 Guardar Link
                                                             </button>
