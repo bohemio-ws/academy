@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
@@ -19,29 +18,53 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         @keyframes subtle-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
         .glow { animation: subtle-glow 2s infinite; }
+        .perspective-1000 { perspective: 1000px; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
+    <!-- FIREBASE SERVICES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCS52B7FNSgSlJTxU5pgSaVFc4eYHnCeeg",
-  authDomain: "bohemio-academy.firebaseapp.com",
-  projectId: "bohemio-academy",
-  storageBucket: "bohemio-academy.firebasestorage.app",
-  messagingSenderId: "179291455529",
-  appId: "1:179291455529:web:1a026c76fda908f1c59c38",
+        // CONFIGURACIÓN MANUAL PARA EXTERIOR (GitHub/Web)
+        // Kenny: Sustituye los valores vacíos con los de tu consola de Firebase
+        const manualConfig = {
+            apiKey: "AIzaSyCS52B7FNSgSlJTxU5pgSaVFc4eYHnCeeg", 
+            authDomain: "bohemio-academy.firebaseapp.com",
+            projectId: "bohemio-academy",
+            storageBucket: "bohemio-academy.firebasestorage.app",
+            messagingSenderId: "179291455529",
+            appId: "1:179291455529:web:1a026c76fda908f1c59c38",
   measurementId: "G-QHMKGJ8FEV"
-};
+        };
 
-        // TABLA MAESTRA CON LOS NOMBRES EXACTOS DE KENNY
+        // Detector de entorno: Usa la config inyectada si existe, si no, usa la manual
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : (manualConfig.apiKey ? manualConfig : null);
+
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'bohemio-academy-kenny';
+            window.fb = { auth, db, appId, signInAnonymously, onAuthStateChanged, signInWithCustomToken, doc, setDoc, collection, onSnapshot };
+        } else {
+            window.fb = null; // Indica que falta configuración
+        }
+    </script>
+
+    <!-- REACT APPLICATION -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Kenny: Pon aquí tu llave de Google AI Studio para que funcione el botón de esculpir
+        const googleApiKey = ""; 
+
         const DATABASE = [
             { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego espectacular con rayos pequeños tesla." },
             { n: 1, l: "T, D", w: "HADA", s: "Un HADA gigante muy poderosa jugando con peter pan." },
@@ -49,7 +72,7 @@ const firebaseConfig = {
             { n: 3, l: "M", w: "HUMO", s: "HUMO de colores que salen de una retroexcavadora averiada." },
             { n: 4, l: "C, K, Q", w: "KO", s: "Un guante de boxeo con dientes dejando KO a un robot de oro." },
             { n: 5, l: "L", w: "ALA", s: "Un ALA de ángel hecha de cuchillos afilados que gotea miel." },
-            { n: 6, l: "S, Z", w: "AS", s: "Un AS de picas  bien definido de oro cortando la luna como si fuera queso." },
+            { n: 6, l: "S, Z", w: "AS", s: "Un AS de picas bien definido de oro cortando la luna como si fuera queso." },
             { n: 7, l: "F", w: "UFO", s: "Un UFO plateado volando muy rápido perseguido por un helicoptero apache ah1." },
             { n: 8, l: "CH, J, G", w: "HACHA", s: "Un HACHA de cristal clavada en un tronco que sangra lava verde." },
             { n: 9, l: "V, B, P", w: "AVE", s: "Un AVE tren de altavelocidad española haciendo Rally por los montes de Toledo ." },
@@ -85,7 +108,7 @@ const firebaseConfig = {
             { n: 39, l: "MP", w: "MAPA", s: "Un MAPA holográfico que sale de una brújula antigua de oro." },
             { n: 40, l: "CR", w: "CURA", s: "Un CURA haciendo exorcismo a un coche deportivo poseído." },
             { n: 41, l: "CT", w: "KATA", s: "Un samurái haciendo una KATA de kárate contra sombras." },
-            { n: 42, l: "CN", w: "CAÑA", s: "Una CAÑA  de pescar gigante pesca politicos corruptos." },
+            { n: 42, l: "CN", w: "CAÑA", s: "Una CAÑA de pescar gigante pesca politicos corruptos." },
             { n: 43, l: "CM", w: "CAMA", s: "Una CAMA con dientes afilados que se come a quien duerme." },
             { n: 44, l: "CC", w: "COCO", s: "Un COCO peludo persigue un rebaño de ovejas de cristal." },
             { n: 45, l: "CL", w: "CAL", s: "Un saco de CAL que explota y convierte todo un pueblo en blanco." },
@@ -116,7 +139,7 @@ const firebaseConfig = {
             { n: 70, l: "FR", w: "FARO", s: "Un FARO proyectando luz que solidifica el agua del mar." },
             { n: 71, l: "FT", w: "FOTO", s: "Una FOTO antigua de la que sale un fantasma en 3D." },
             { n: 72, l: "FN", w: "FAN", s: "Un FAN con mil manos aplaudiendo a un alienígena rockero." },
-            { n: 73, l: "FM", w: "FAMA", s: "(La FAMA) de un rockero en la alfombra roja que se convierte en una cobra gigante." },
+            { n: 73, l: "FM", w: "FAMA", s: "La FAMA de un rockero en la alfombra roja que se convierte en una cobra gigante." },
             { n: 74, l: "FC", w: "FOCA", s: "Una FOCA con un monóculo abofeteando al direstor del banco muy enfadada." },
             { n: 75, l: "FL", w: "FILO", s: "El FILO de una espada cortando un átomo provocando luz." },
             { n: 76, l: "FS", w: "FOSO", s: "Un FOSO lleno de cocodrilos con armadura y ametralladoras." },
@@ -156,6 +179,21 @@ const firebaseConfig = {
             const [testIdx, setTestIdx] = useState(0);
             const [flipped, setFlipped] = useState(false);
 
+            // CONTROL DE SEGURIDAD: Si no hay Firebase, mostramos aviso
+            if (!window.fb) {
+                return (
+                    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-10 text-center">
+                        <div className="bg-red-500/10 border border-red-500 p-8 rounded-3xl max-w-lg">
+                            <h2 className="text-red-500 text-2xl font-black mb-4 uppercase">Configuración Incompleta</h2>
+                            <p className="text-slate-300 mb-6">Kenny, para que la app funcione fuera de este chat, debes editar el archivo e introducir tus llaves de <strong>Firebase</strong> en la variable <code>manualConfig</code>.</p>
+                            <div className="bg-slate-950 p-4 rounded-xl text-left text-xs font-mono text-indigo-400 overflow-x-auto">
+                                manualConfig = &#123; apiKey: "AIza..." &#125;
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             useEffect(() => {
                 const { auth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } = window.fb;
                 const initAuth = async () => {
@@ -165,7 +203,7 @@ const firebaseConfig = {
                         } else {
                             await signInAnonymously(auth);
                         }
-                    } catch (e) { setStatus("❌ Error de conexión"); }
+                    } catch (e) { setStatus("❌ Error Auth: Revisa tus credenciales"); }
                 };
                 initAuth();
                 const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -200,55 +238,59 @@ const firebaseConfig = {
                 });
             };
 
-            const fetchWithRetry = async (prompt, retries = 5, delay = 1000) => {
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                instances: { prompt: prompt },
-                                parameters: { sampleCount: 1 }
-                            })
-                        });
-                        if (res.ok) return await res.json();
-                        await new Promise(r => setTimeout(r, delay));
-                        delay *= 2;
-                    } catch (e) {
-                        if (i === retries - 1) throw e;
-                        await new Promise(r => setTimeout(r, delay));
-                        delay *= 2;
-                    }
-                }
-            };
-
             const generateOne = async (item) => {
                 if (loading || !user) return;
+                const keyToUse = googleApiKey || (typeof apiKey !== 'undefined' ? apiKey : "");
+                
+                if (!keyToUse) {
+                    setStatus("❌ Falta Google API Key");
+                    return;
+                }
+
                 setLoading(true);
                 setStatus(`Esculpiendo: ${item.w}...`);
+                
+                const prompt = `Hyper-realistic surreal 3D mnemonic image: ${item.s}. Unreal Engine 5 render style, cinematic lighting, 8k, white studio background. Extremely memorable.`;
+                
                 try {
-                    // PROMPT AJUSTADO: FOCO IMAGEN, TEXTO SECUNDARIO/OCULTO
-                    const prompt = `A hyper-realistic 3D mnemonic masterpiece. The visual MUST focus on: ${item.s}. The scene must be extremely bizarre, surreal, and memorable. Unreal Engine 5 render style, cinematic lighting, 8k resolution, white studio background. The word "${item.w}" should be integrated discretely into the background or a secondary object in multiple vibrant colors, but MUST NOT be the main focus. FOCUS 100% ON THE SHOCKING IMAGE ACTION. NO LOGOS.`;
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${keyToUse}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            instances: { prompt: prompt },
+                            parameters: { sampleCount: 1 }
+                        })
+                    });
                     
-                    const result = await fetchWithRetry(prompt);
-                    
+                    const result = await res.json();
                     if (result.predictions?.[0]?.bytesBase64Encoded) {
                         const finalBase64 = await compress(`data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`);
                         const { db, appId, doc, setDoc } = window.fb;
                         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images', item.n.toString()), {
                             url: finalBase64, timestamp: Date.now()
                         });
-                        setStatus(`✅ ¡${item.w} guardado!`);
+                        setStatus(`✅ ¡${item.w} esculpido!`);
                     } else {
-                        throw new Error("IA sin respuesta");
+                        throw new Error();
                     }
                 } catch (e) {
-                    setStatus(`❌ Error IA: Reintenta.`);
+                    setStatus(`❌ Error IA: Revisa tu API Key`);
                 } finally {
                     setLoading(false);
                     setTimeout(() => setStatus(""), 3000);
                 }
             };
+
+            const LucideIcon = ({ name, className }) => {
+                return <span className={className} dangerouslySetInnerHTML={{ __html: `<i data-lucide="${name}"></i>` }} />;
+            };
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    if (window.lucide) window.lucide.createIcons();
+                }, 500);
+                return () => clearInterval(interval);
+            }, []);
 
             const blocks = ["0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"];
 
@@ -257,7 +299,7 @@ const firebaseConfig = {
                     <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-xl border-b border-indigo-500/20">
                         <div className="flex items-center gap-4">
                             <div className={`bg-indigo-600 p-2.5 rounded-2xl cursor-pointer hover:scale-110 transition-transform ${isMaster ? 'ring-4 ring-indigo-400' : ''}`} onClick={() => setIsMaster(!isMaster)}>
-                                <i data-lucide="brain-circuit" className={`w-6 h-6 text-white ${isMaster ? 'glow' : ''}`}></i>
+                                <LucideIcon name="brain-circuit" className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-xl font-black tracking-tighter uppercase text-white leading-none">Bohemio Academy</h1>
@@ -271,14 +313,14 @@ const firebaseConfig = {
                     </header>
 
                     {status && (
-                        <div className={`text-white text-[11px] font-bold text-center py-3 uppercase tracking-widest animate-pulse ${status.includes('❌') ? 'bg-red-600' : 'bg-indigo-600'}`}>
+                        <div className={`text-white text-[11px] font-bold text-center py-3 uppercase tracking-widest animate-pulse sticky top-[73px] z-40 ${status.includes('❌') ? 'bg-red-600' : 'bg-indigo-600'}`}>
                             {status}
                         </div>
                     )}
 
                     <main className="flex-grow max-w-7xl mx-auto w-full p-6 md:p-10">
                         {view === 'gallery' ? (
-                            <div className="space-y-10 animate-in fade-in duration-700">
+                            <div className="space-y-10">
                                 <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar snap-x">
                                     {blocks.map((b, i) => (
                                         <button key={i} onClick={() => setActiveBlock(i)} className={`flex-shrink-0 px-7 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all snap-start ${activeBlock === i ? 'bg-indigo-600 border-indigo-500 text-white shadow-xl' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-500'}`}>{b}</button>
@@ -289,10 +331,10 @@ const firebaseConfig = {
                                     {DATABASE.slice(activeBlock * 10, (activeBlock + 1) * 10).map(item => (
                                         <div key={item.n} className="bg-slate-800/30 rounded-[3rem] p-7 border border-white/5 shadow-2xl flex flex-col sm:flex-row gap-8 group overflow-hidden transition-all hover:border-indigo-500/50">
                                             <div className="w-full sm:w-48 h-48 bg-slate-900 rounded-[2.5rem] flex-shrink-0 relative overflow-hidden flex items-center justify-center border border-white/5">
-                                                {images[item.n] ? <img src={images[item.n]} className="w-full h-full object-cover animate-in zoom-in-95" /> : <span className="text-5xl font-black text-slate-800">{item.n}</span>}
+                                                {images[item.n] ? <img src={images[item.n]} className="w-full h-full object-cover" /> : <span className="text-5xl font-black text-slate-800">{item.n}</span>}
                                                 {isMaster && user && (
                                                     <button onClick={() => generateOne(item)} className="absolute inset-0 bg-indigo-900/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
-                                                        <i data-lucide="sparkles" className="text-white w-10 h-10 animate-pulse"></i>
+                                                        <LucideIcon name="sparkles" className="text-white w-10 h-10 glow" />
                                                         <span className="text-[9px] text-white font-black uppercase">Esculpir IA</span>
                                                     </button>
                                                 )}
@@ -314,26 +356,33 @@ const firebaseConfig = {
                                 </div>
                             </div>
                         ) : (
-                            <div className="max-w-md mx-auto py-12 animate-in zoom-in-95">
+                            <div className="max-w-md mx-auto py-12">
                                 <div className="w-full aspect-[3/4] perspective-1000">
                                     <div className={`relative w-full h-full card-inner transform-style-3d cursor-pointer ${flipped ? 'rotate-y-180' : ''}`} onClick={() => setFlipped(true)}>
                                         <div className="absolute inset-0 bg-indigo-600 rounded-[4rem] shadow-2xl flex flex-col items-center justify-center backface-hidden border-[18px] border-indigo-500/30 text-white p-10 text-center">
                                             <span className="text-[15rem] font-black leading-none drop-shadow-2xl">{DATABASE[testIdx].n}</span>
                                             <div className="mt-10 opacity-50 flex items-center gap-2 justify-center">
-                                                <i data-lucide="zap" className="w-6 h-6 animate-bounce"></i>
+                                                <LucideIcon name="zap" className="w-6 h-6 animate-bounce" />
                                                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">Toca para revelar</span>
                                             </div>
                                         </div>
                                         <div className="absolute inset-0 bg-white rounded-[4rem] shadow-2xl flex flex-col items-center justify-center rotate-y-180 backface-hidden p-10 border-4 border-indigo-600 text-slate-900 text-center">
                                             <div className="w-full aspect-square bg-slate-50 rounded-[3rem] mb-8 overflow-hidden border border-slate-100 flex items-center justify-center shadow-inner">
-                                                {images[testIdx] ? <img src={images[testIdx]} className="w-full h-full object-cover" /> : <i data-lucide="image" className="w-24 h-24 opacity-10"></i>}
+                                                {images[testIdx] ? <img src={images[testIdx]} className="w-full h-full object-cover" /> : <LucideIcon name="image" className="w-24 h-24 opacity-10" />}
                                             </div>
                                             <h2 className="text-6xl font-black uppercase text-indigo-900 tracking-tighter mb-4 leading-none">{DATABASE[testIdx].w}</h2>
                                             <p className="text-sm font-bold text-slate-500 text-center italic border-t border-slate-100 pt-6 leading-relaxed">"{DATABASE[testIdx].s}"</p>
                                         </div>
                                     </div>
                                 </div>
-                                {flipped && <button onClick={() => { setFlipped(false); setTestIdx(Math.floor(Math.random()*DATABASE.length)); }} className="w-full mt-10 py-7 bg-white text-indigo-900 font-black rounded-[2.5rem] shadow-2xl uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-105 transition-all">Siguiente <i data-lucide="arrow-right" className="w-4 h-4"></i></button>}
+                                {flipped && (
+                                    <button 
+                                        onClick={() => { setFlipped(false); setTestIdx(Math.floor(Math.random()*DATABASE.length)); }} 
+                                        className="w-full mt-10 py-7 bg-white text-indigo-900 font-black rounded-[2.5rem] shadow-2xl uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-105 transition-all"
+                                    >
+                                        Siguiente <LucideIcon name="arrow-right" className="w-4 h-4" />
+                                    </button>
+                                )}
                             </div>
                         )}
                     </main>
@@ -347,7 +396,7 @@ const firebaseConfig = {
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-        setInterval(() => window.lucide?.createIcons(), 500);
     </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </body>
 </html>
