@@ -54,108 +54,108 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Base de datos unificada con Prompts en Inglés y Mnemotecnia en Español
+        // Base de datos optimizada: Prompts enfocados en ligereza y fluidez (JPG, low size, simple bg)
         const DATABASE = [
-            { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego espectacular con rayos pequeños tesla.", p: "3D isometric memory card style, a giant espectacular flaming ARO with small Tesla lightning bolts, cinematic lighting, 8k." },
-            { n: 1, l: "T, D", w: "HADA", s: "Un HADA gigante muy poderosa jugando con peter pan.", p: "3D isometric memory card style, a giant and powerful HADA playing with Peter Pan, vibrant colors, detailed textures, 8k." },
-            { n: 2, l: "N", w: "NOE", s: "NOE en su arca del futuro feliz con los animales sobre el mar azul.", p: "3D isometric memory card style, NOE in his futuristic ark happy with animals on a deep blue sea, masterpiece, 8k." },
-            { n: 3, l: "M", w: "HUMO", s: "HUMO de colores que salen de una retroexcavadora averiada.", p: "3D isometric memory card style, colorful HUMO coming out of a broken excavator, surreal atmosphere, 8k." },
-            { n: 4, l: "C, K, Q", w: "KO", s: "Un guante de boxeo con dientes dejando KO a un robot de oro.", p: "3D isometric memory card style, a boxing glove with teeth knocking out a golden robot, KO effect, high detail, 8k." },
-            { n: 5, l: "L", w: "ALA", s: "Un ALA de ángel hecha de cuchillos afilados que gotea miel.", p: "3D isometric memory card style, an angel ALA made of sharp knives dripping honey, dramatic contrast, 8k." },
-            { n: 6, l: "S, Z", w: "AS", s: "Un AS de picas bien definido de oro cortando la luna como si fuera queso.", p: "3D isometric memory card style, a golden AS of picas cutting the moon like it was cheese, surreal cosmic art, 8k." },
-            { n: 7, l: "F", w: "UFO", s: "Un UFO plateado volando muy rápido perseguido por un helicoptero apache ah1.", p: "3D isometric memory card style, a silver UFO flying fast chased by an Apache AH1 helicopter, motion blur, 8k." },
-            { n: 8, l: "CH, J, G", w: "HACHA", s: "Un HACHA de cristal clavada en un tronco que sangra lava verde.", p: "3D isometric memory card style, a crystal HACHA stuck in a tree trunk bleeding green lava, glowing elements, 8k." },
-            { n: 9, l: "V, B, P", w: "AVE", s: "Un AVE tren de altavelocidad española haciendo Rally por los montes de Toledo .", p: "3D isometric memory card style, a high-speed AVE train doing rally racing through the mountains, dust and speed, 8k." },
-            { n: 10, l: "TR", w: "TORO", s: "Un TORO con cuernos de rayo destrozando un muro de porcelana.", p: "3D isometric memory card style, a TORO with lightning horns destroying a porcelain wall, shattering effects, 8k." },
-            { n: 11, l: "TT", w: "TETA", s: "Una TETA de mujer humana gigante amamantando a una niña de origen alienigena.", p: "3D isometric memory card style, a giant human TETA breastfeeding an alien baby girl, surreal and artistic, 8k." },
-            { n: 12, l: "TN", w: "TUNO", s: "Un TUNO esqueleto tocando una mandolina de oro bajo lluvia de billetes.", p: "3D isometric memory card style, a skeleton TUNO playing a golden mandolin under a rain of banknotes, festive macabre, 8k." },
-            { n: 13, l: "TM", w: "TIMO", s: "Un pulpo gigante engañando a dos hombres con juego de trilero con vasos muy sucios.", p: "3D isometric memory card style, a giant octopus performing a shell game TIMO with dirty cups, underwater mystery, 8k." },
-            { n: 14, l: "TC", w: "TACO", s: "Un TACO de madera de un arbol en forma de dragones escupiendode fuego.", p: "3D isometric memory card style, a wooden TACO shaped like dragons breathing fire, carved detail, 8k." },
-            { n: 15, l: "TL", w: "TELA", s: "Una TELA de araña láser atrapando un sol en miniatura.", p: "3D isometric memory card style, a laser spider TELA catching a miniature sun, high tech glow, 8k." },
-            { n: 16, l: "TZ", w: "TAZA", s: "Una TAZA de la que sale café con tiburones hambrientos.", p: "3D isometric memory card style, a TAZA with coffee from which hungry sharks emerge, splashing water, 8k." },
-            { n: 17, l: "TF", w: "TUFO", s: "Un TUFO gas verde de unas zapatillas deportivas que desmayan a una familia y sus mascotas .", p: "3D isometric memory card style, green TUFO gas coming from sneakers making a family and pets faint, cartoonish style, 8k." },
-            { n: 18, l: "TCH", w: "TECHO", s: "Un TECHO de la capilla sixtina que secuestran a los visitantes.", p: "3D isometric memory card style, the Sistine Chapel TECHO kidnapping visitors into the painting, divine light, 8k." },
-            { n: 19, l: "TP", w: "TAPA", s: "Una TAPA de alcantarilla escupida por un choros de agua, encima un ninja.", p: "3D isometric memory card style, a manhole TAPA launched by a water jet with a ninja on top, urban action, 8k." },
-            { n: 20, l: "NR", w: "NORIA", s: "Una NORIA donde las cabinas son cabezas de león rugiendo.", p: "3D isometric memory card style, a NORIA where the cabins are roaring lion heads, amusement park theme, 8k." },
-            { n: 21, l: "ND", w: "NIDO", s: "Un NIDO de huevos de oro que emiten rayos eléctricos.", p: "3D isometric memory card style, a NIDO with golden eggs emitting electric bolts, magical forest, 8k." },
-            { n: 22, l: "NÑ", w: "NIÑA", s: "Una NIÑA con ojos de fuego levantando un portaaviones.", p: "3D isometric memory card style, a NIÑA with fire eyes lifting a massive aircraft carrier, superpowered, 8k." },
-            { n: 23, l: "NM", w: "NEMO", s: "NEMO el pez payaso de la pelicula nemo haciendo futing con tiburones mafiosos.", p: "3D isometric memory card style, NEMO the clownfish jogging with mobster sharks, funny scene, 8k." },
-            { n: 24, l: "NC", w: "NUCA", s: "Una NUCA humana recibiendo la colleja del siglo.", p: "3D isometric memory card style, a human NUCA receiving the strongest slap of the century, impact effect, 8k." },
-            { n: 25, l: "NL", w: "NILO", s: "El río NILO lleno de pirámides flotantes con Cleopatra.", p: "3D isometric memory card style, the NILO river full of floating pyramids with Cleopatra, ancient Egypt reimagined, 8k." },
-            { n: 26, l: "NS", w: "NASA", s: "Un astronauta de la NASA comiendo una hamburguesa gigante en Marte con alienigenas.", p: "3D isometric memory card style, a NASA astronaut eating a giant burger on Mars with aliens, sci-fi diner, 8k." },
-            { n: 27, l: "NF", w: "INFO", s: "Una mujer de info turistica muy agresiva dandole tripticos a la gente, estimo mortadelo y filemon.", p: "3D isometric memory card style, an aggressive INFO woman giving brochures to Mortadelo and Filemon, comic style, 8k." },
-            { n: 28, l: "NCH", w: "NICHO", s: "Un NICHO de un cementerio rompiendose la losa sale una mujer cadaverica sacudiendose el polvo.", p: "3D isometric memory card style, a cemetery NICHO breaking open as a dusty woman emerges, spooky atmosphere, 8k." },
-            { n: 29, l: "NB", w: "NIEVE", s: "Una tormenta de NIEVE impresionante, todo el mundo huye y un oso polar en su amaca con sus gafas de sol disfrutando como si estuviera en la playa.", p: "3D isometric memory card style, a massive NIEVE storm with a polar bear in a hammock wearing sunglasses, ironic scene, 8k." },
-            { n: 30, l: "MR", w: "MAR", s: "Un MAR de mercurio con delfines de cristal transparente.", p: "3D isometric memory card style, a MAR made of liquid mercury with transparent glass dolphins, metallic reflections, 8k." },
-            { n: 31, l: "MT", w: "MOTO", s: "Una MOTO choper quemando ruedas en el asfalto soltando un humo de rayos.", p: "3D isometric memory card style, a chopper MOTO burning tires leaving a trail of lightning smoke, asphalt heat, 8k." },
-            { n: 32, l: "MN", w: "MINA", s: "Una MINA de carbon a cielo abierto con explosiones tnt brutales.", p: "3D isometric memory card style, an open-pit coal MINA with massive TNT explosions, industrial power, 8k." },
-            { n: 33, l: "MM", w: "MAMA", s: "Una MAMA osa con mandil disparando una ametralladora.", p: "3D isometric memory card style, a MAMA bear wearing an apron firing a machine gun, protector mode, 8k." },
-            { n: 34, l: "MC", w: "MOCO", s: "Un MOCO gigante y viscoso atrapando un escuadrón de policía.", p: "3D isometric memory card style, a giant viscous MOCO trapping a police squad, neon green slime, 8k." },
-            { n: 35, l: "ML", w: "MULA", s: "Una MULA con alas de murciélago cargando lingotes.", p: "3D isometric memory card style, a MULA with bat wings carrying gold ingots, mythical beast, 8k." },
-            { n: 36, l: "MS", w: "MESA", s: "Una MESA de quirófano donde cirujanos gatos operan a un alien.", p: "3D isometric memory card style, an operating MESA where cat surgeons operate on an alien, medical sci-fi, 8k." },
-            { n: 37, l: "MF", w: "MAFIA", s: "Un gánster de la MAFIA perro fumando un puro que lanza rayos láser.", p: "3D isometric memory card style, a MAFIA dog gangster smoking a cigar that shoots lasers, dark noir style, 8k." },
-            { n: 38, l: "MCH", w: "MECHA", s: "Una MECHA infinita que recorre toda una ciudad de neón.", p: "3D isometric memory card style, an infinite burning MECHA running through a neon city, cyberpunk, 8k." },
-            { n: 39, l: "MP", w: "MAPA", s: "Un MAPA holográfico que sale de una brújula antigua de oro.", p: "3D isometric memory card style, a holographic MAPA emerging from an ancient gold compass, exploration, 8k." },
-            { n: 40, l: "CR", w: "CURA", s: "Un CURA haciendo exorcismo a un coche deportivo poseído.", p: "3D isometric memory card style, a CURA performing an exorcism on a possessed sports car, supernatural action, 8k." },
-            { n: 41, l: "CT", w: "KATA", s: "Un samurái haciendo una KATA de kárate contra sombras.", p: "3D isometric memory card style, a samurai performing a karate KATA against shadows, zen garden, 8k." },
-            { n: 42, l: "CN", w: "CAÑA", s: "Una CAÑA de pescar gigante pesca politicos corruptos.", p: "3D isometric memory card style, a giant CAÑA fishing rod catching corrupt politicians, satire art, 8k." },
-            { n: 43, l: "CM", w: "CAMA", s: "Una CAMA con dientes afilados que se come a quien duerme.", p: "3D isometric memory card style, a CAMA with sharp teeth eating anyone who sleeps on it, horror theme, 8k." },
-            { n: 44, l: "CC", w: "COCO", s: "Un COCO peludo persigue un rebaño de ovejas de cristal.", p: "3D isometric memory card style, a furry COCO monster chasing a flock of glass sheep, whimsical nightmare, 8k." },
-            { n: 45, l: "CL", w: "CAL", s: "Un saco de CAL que explota y convierte todo un pueblo en blanco.", p: "3D isometric memory card style, a sack of CAL exploding turning a whole town white, high contrast, 8k." },
-            { n: 46, l: "CS", w: "CASA", s: "Una CASA con patas de araña caminando por el desierto.", p: "3D isometric memory card style, a CASA with spider legs walking through the desert, surreal architecture, 8k." },
-            { n: 47, l: "CF", w: "CAFE", s: "Taza de CAFE hirviendo que se convierte en un volcán.", p: "3D isometric memory card style, a cup of boiling CAFE turning into a volcano, steam and lava, 8k." },
-            { n: 48, l: "CCH", w: "COCHE", s: "Un COCHE de carreras hecho de diamantes.", p: "3D isometric memory card style, a racing COCHE made entirely of diamonds, sparkling refractions, 8k." },
-            { n: 49, l: "CB", w: "CAPA", s: "Una CAPA de superman se rompr volando y cae en el jardin de un villano esqueletico.", p: "3D isometric memory card style, Superman's CAPA tearing mid-flight falling into a skeleton's garden, dramatic fall, 8k." },
-            { n: 50, l: "LR", w: "LORO", s: "Un LORO pirata disparando un cañón de confeti brillante.", p: "3D isometric memory card style, a pirate LORO shooting a glowing confetti cannon, vibrant plumage, 8k." },
-            { n: 51, l: "LT", w: "LATA", s: "Una LATA de la que sale una galaxia espiral completa.", p: "3D isometric memory card style, a tin LATA from which a complete spiral galaxy emerges, cosmic wonder, 8k." },
-            { n: 52, l: "LN", w: "LUNA", s: "La LUNA surfeando en los anillos de Saturno.", p: "3D isometric memory card style, the LUNA surfing on the rings of Saturn, space sports, 8k." },
-            { n: 53, l: "LM", w: "LIMA", s: "Una LIMA de metal afilando la lengua de un monstruo.", p: "3D isometric memory card style, a metal LIMA sharpening the tongue of a monster, gritty detail, 8k." },
-            { n: 54, l: "LC", w: "LACA", s: "Un spray de LACA que congela a la gente en oro macizo.", p: "3D isometric memory card style, a LACA spray freezing people into solid gold, luxurious effect, 8k." },
-            { n: 55, l: "LL", w: "LEAL", s: "Un perro LEAL gigante con armadura protegiendo un castillo.", p: "3D isometric memory card style, a giant LEAL dog in armor protecting a castle, heroic pose, 8k." },
-            { n: 56, l: "LS", w: "LAZO", s: "Un LAZO vaquero hecho de electricidad atrapando a un rayo.", p: "3D isometric memory card style, a cowboy LAZO made of electricity catching a lightning bolt, western sci-fi, 8k." },
-            { n: 57, l: "LF", w: "ALFA", s: "Un lobo ALFA aullando frente a un portal dimensional.", p: "3D isometric memory card style, an ALFA wolf howling in front of a dimensional portal, mystical, 8k." },
-            { n: 58, l: "LCH", w: "LECHE", s: "Una catarata de LECHE alimentando flores robóticas.", p: "3D isometric memory card style, a waterfall of LECHE feeding robotic flowers, surreal nature, 8k." },
-            { n: 59, l: "LB", w: "LOBO", s: "Un LOBO con piel de oveja pero ojos de láser rojo.", p: "3D isometric memory card style, a LOBO in sheep's clothing with red laser eyes, deception theme, 8k." },
-            { n: 60, l: "SR", w: "SOR", s: "Una monja (SOR) con patines y una guitarra eléctrica llameante.", p: "3D isometric memory card style, a nun (SOR) with roller skates and a flaming electric guitar, rock n' roll, 8k." },
-            { n: 61, l: "ST", w: "SETA", s: "Una SETA de la que sale un hongo atómico de purpurina.", p: "3D isometric memory card style, a SETA from which a glitter atomic mushroom cloud emerges, colorful explosion, 8k." },
-            { n: 62, l: "SN", w: "SENA", s: "El río SENA con el agua convertida en vino tinto brillante al lado de la torre Eiffel.", p: "3D isometric memory card style, the SENA river with water turned into glowing red wine by the Eiffel Tower, romantic surrealism, 8k." },
-            { n: 63, l: "SM", w: "SUMA", s: "Un signo de SUMA gigante hecho de lingotes de oro aplastando a la resta y a la raiz cuadrada.", p: "3D isometric memory card style, a giant SUMA sign made of gold bars crushing other math symbols, wealth theme, 8k." },
-            { n: 64, l: "SC", w: "SACA", s: "Una SACA llena de llenas de mafiosos en un autobus policial.", p: "3D isometric memory card style, a SACA bag full of mobsters on a police bus, funny heist, 8k." },
-            { n: 65, l: "SL", w: "SOL", s: "El SOL con gafas de sol surfeando en una ola de fuego.", p: "3D isometric memory card style, the SOL wearing sunglasses surfing on a wave of fire, summer heat, 8k." },
-            { n: 66, l: "SS", w: "SESO", s: "Un SESO gigante en un frasco de cristal con ojos.", p: "3D isometric memory card style, a giant SESO in a glass jar with eyes, brainy sci-fi, 8k." },
-            { n: 67, l: "SF", w: "SOFA", s: "Un SOFA que es una boca gigante de peluche rojo.", p: "3D isometric memory card style, a SOFA that is a giant red plush mouth, weird furniture, 8k." },
-            { n: 68, l: "SCH", w: "SOGA", s: "Una SOGA que se convierte en una serpiente boa constrictora.", p: "3D isometric memory card style, a SOGA rope turning into a boa constrictor snake, transformation, 8k." },
-            { n: 69, l: "SB", w: "SAPO", s: "Un SAPO con corona sentado en un trono de moscas.", p: "3D isometric memory card style, a SAPO with a crown sitting on a throne of flies, fairy tale twist, 8k." },
-            { n: 70, l: "FR", w: "FARO", s: "Un FARO proyectando luz que solidifica el agua del mar.", p: "3D isometric memory card style, a FARO lighthouse projecting light that solidifies the sea, magical beam, 8k." },
-            { n: 71, l: "FT", w: "FOTO", s: "Una FOTO antigua de la que sale un fantasma en 3D.", p: "3D isometric memory card style, an old FOTO from which a 3D ghost emerges, nostalgic horror, 8k." },
-            { n: 72, l: "FN", w: "FAN", s: "Un FAN con mil manos aplaudiendo a un alienígena rockero.", p: "3D isometric memory card style, a FAN with a thousand hands clapping for a rockstar alien, concert vibe, 8k." },
-            { n: 73, l: "FM", w: "FAMA", s: "La FAMA de un rockero en la alfombra roja que se convierte en una cobra gigante.", p: "3D isometric memory card style, the red carpet FAMA turning into a giant cobra, celebrity peril, 8k." },
-            { n: 74, l: "FC", w: "FOCA", s: "Una FOCA con un monóculo abofeteando al direstor del banco muy enfadada.", p: "3D isometric memory card style, an angry FOCA with a monocle slapping a bank director, funny scene, 8k." },
-            { n: 75, l: "FL", w: "FILO", s: "El FILO de una espada cortando un átomo provocando luz.", p: "3D isometric memory card style, the sharp FILO of a sword splitting an atom creating bright light, precision power, 8k." },
-            { n: 76, l: "FS", w: "FOSO", s: "Un FOSO lleno de cocodrilos con armadura y ametralladoras.", p: "3D isometric memory card style, a FOSO pit full of armored crocodiles with machine guns, fortress defense, 8k." },
-            { n: 77, l: "FF", w: "FOFO", s: "Un payaso FOFO se sube a su bicicleta y la aplasta como una prensa hidraulica.", p: "3D isometric memory card style, a chubby clown FOFO crushing his bicycle like a hydraulic press, slapstick, 8k." },
-            { n: 78, l: "FCH", w: "FICHA", s: "Una FICHA de dominó gigante derribando la estatua de la Libertad.", p: "3D isometric memory card style, a giant domino FICHA knocking down the Statue of Liberty, chain reaction, 8k." },
-            { n: 79, l: "FB", w: "FOBIA", s: "Una araña gigante (FOBIA) con mil ojos humanos.", p: "3D isometric memory card style, a giant spider (FOBIA) with a thousand human eyes, arachnophobia art, 8k." },
-            { n: 80, l: "CHR", w: "GRUA", s: "Una GRUA que levanta la gran pirámide como si fuera cartón.", p: "3D isometric memory card style, a GRUA crane lifting the Great Pyramid like it was cardboard, construction, 8k." },
-            { n: 81, l: "CHT", w: "CHITA", s: "Una mona CHITA conduciendo un coche de carreras.", p: "3D isometric memory card style, CHITA the monkey driving a Formula 1 racing car, fast action, 8k." },
-            { n: 82, l: "CHN", w: "CHINA", s: "Una mujer CHINA bailando con abanicos de fuego real.", p: "3D isometric memory card style, a CHINA woman dancing with real fire fans, elegant performance, 8k." },
-            { n: 83, l: "GM", w: "GAMO", s: "Un GAMO totalmente enmorado de un unicornio que le rechaza.", p: "3D isometric memory card style, a GAMO deer in love with a unicorn who rejects him, fantasy forest, 8k." },
-            { n: 84, l: "CHC", w: "CHICA", s: "Una CHICA de cristal con un corazón de rubí.", p: "3D isometric memory card style, a crystal CHICA with a ruby heart, fragile beauty, 8k." },
-            { n: 85, l: "CHL", w: "CHULO", s: "Un tipo CHULO con gafas que reflejan el fin del mundo.", p: "3D isometric memory card style, a cool CHULO guy with glasses reflecting the end of the world, swagger, 8k." },
-            { n: 86, l: "CHS", w: "CHAS", s: "Un chasquido CHAS provocando explosión de nieve.", p: "3D isometric memory card style, a snap of fingers CHAS causing a snow explosion, magic trick, 8k." },
-            { n: 87, l: "CHF", w: "CHUFA", s: "Un campo de CHUFA donde crecen botellas de horchata.", p: "3D isometric memory card style, a field of CHUFA where bottles of horchata grow, agricultural surrealism, 8k." },
-            { n: 88, l: "CHCH", w: "CHUCHO", s: "Un perro CHUCHO con tres cabezas escupiendo confeti.", p: "3D isometric memory card style, a three-headed mutt dog CHUCHO spitting confetti, festive cerberus, 8k." },
-            { n: 89, l: "CHB", w: "CHUPA", s: "Un CHUPA-chups del tamaño de un edificio lamido por un gigante.", p: "3D isometric memory card style, a skyscraper-sized CHUPA-chups being licked by a giant, sweet scale, 8k." },
-            { n: 90, l: "BR/PR", w: "BAR", s: "Un BAR en el fondo del mar donde los camareros son pulpos.", p: "3D isometric memory card style, an underwater BAR where the waiters are octopuses, deep sea social, 8k." },
-            { n: 91, l: "BT", w: "BATA", s: "Una BATA científica mezclando pociones mágicas sola.", p: "3D isometric memory card style, a scientific BATA lab coat mixing magic potions alone, ghostly science, 8k." },
-            { n: 92, l: "VN", w: "VINO", s: "Una botella de VINO baila borracha con una mujer policia que le esposa por conducir.", p: "3D isometric memory card style, a drunk VINO bottle dancing with a police woman handcuffing it, funny law, 8k." },
-            { n: 93, l: "PM", w: "PUMA", s: "Un PUMA de jade acechando en la selva neón.", p: "3D isometric memory card style, a jade PUMA stalking in a neon jungle, sleek predator, 8k." },
-            { n: 94, l: "VC", w: "VACA", s: "Una VACA volando en el avion del baron rojo disparando corazones y gafas de aviador.", p: "3D isometric memory card style, a VACA cow flying the Red Baron's plane shooting hearts, aviation humor, 8k." },
-            { n: 95, l: "VL", w: "VELA", s: "Una VELA que quema oscuridad y emite sombras brillantes.", p: "3D isometric memory card style, a VELA candle burning darkness and emitting glowing shadows, mystical light, 8k." },
-            { n: 96, l: "VS", w: "VASO", s: "Un VASO de cristal que bebe arena del mar.", p: "3D isometric memory card style, a crystal VASO drinking sand from the sea, thirsty glass, 8k." },
-            { n: 97, l: "VF", w: "PUFO", s: "Fajos de billetes (PUFO) que se vuelven cucarachas al tocarlos.", p: "3D isometric memory card style, bundles of money (PUFO) turning into cockroaches when touched, scam theme, 8k." },
-            { n: 98, l: "BCH", w: "BACHE", s: "Un BACHE en la carretera portal a otra galaxia lejana.", p: "3D isometric memory card style, a road BACHE that is a portal to a distant galaxy, urban sci-fi, 8k." },
-            { n: 99, l: "PP", w: "PAPA", s: "El PAPA bailando breakdance en el Vaticano con túnica arcoíris.", p: "3D isometric memory card style, the PAPA dancing breakdance in the Vatican with rainbow robes, joyful spirit, 8k." }
+            { n: 0, l: "R", w: "ARO", s: "Un ARO gigante de fuego espectacular con rayos pequeños tesla.", p: "3D isometric memory card style, giant flaming ARO with tesla bolts, simple clean background, web-optimized lightweight JPG, fast loading." },
+            { n: 1, l: "T, D", w: "HADA", s: "Un HADA gigante muy poderosa jugando con peter pan.", p: "3D isometric memory card style, powerful HADA with Peter Pan, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 2, l: "N", w: "NOE", s: "NOE en su arca del futuro feliz con los animales sobre el mar azul.", p: "3D isometric memory card style, NOE futuristic ark, sea background, web-optimized lightweight JPG, fast loading." },
+            { n: 3, l: "M", w: "HUMO", s: "HUMO de colores que salen de una retroexcavadora averiada.", p: "3D isometric memory card style, colorful HUMO from excavator, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 4, l: "C, K, Q", w: "KO", s: "Un guante de boxeo con dientes dejando KO a un robot de oro.", p: "3D isometric memory card style, boxing glove KO gold robot, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 5, l: "L", w: "ALA", s: "Un ALA de ángel hecha de cuchillos afilados que gotea miel.", p: "3D isometric memory card style, angel ALA knife honey, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 6, l: "S, Z", w: "AS", s: "Un AS de picas bien definido de oro cortando la luna como si fuera queso.", p: "3D isometric memory card style, gold AS cutting moon, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 7, l: "F", w: "UFO", s: "Un UFO plateado volando muy rápido perseguido por un helicoptero apache ah1.", p: "3D isometric memory card style, silver UFO chase helicopter, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 8, l: "CH, J, G", w: "HACHA", s: "Un HACHA de cristal clavada en un tronco que sangra lava verde.", p: "3D isometric memory card style, crystal HACHA lava tree, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 9, l: "V, B, P", w: "AVE", s: "Un AVE tren de altavelocidad española haciendo Rally por los montes de Toledo .", p: "3D isometric memory card style, fast AVE train rally, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 10, l: "TR", w: "TORO", s: "Un TORO con cuernos de rayo destrozando un muro de porcelana.", p: "3D isometric memory card style, TORO lightning horns wall, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 11, l: "TT", w: "TETA", s: "Una TETA de mujer humana gigante amamantando a una niña de origen alienigena.", p: "3D isometric memory card style, surreal TETA alien baby, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 12, l: "TN", w: "TUNO", s: "Un TUNO esqueleto tocando una mandolina de oro bajo lluvia de billetes.", p: "3D isometric memory card style, skeleton TUNO money rain, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 13, l: "TM", w: "TIMO", s: "Un pulpo gigante engañando a dos hombres con juego de trilero con vasos muy sucios.", p: "3D isometric memory card style, octopus TIMO cups game, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 14, l: "TC", w: "TACO", s: "Un TACO de madera de un arbol en forma de dragones escupiendode fuego.", p: "3D isometric memory card style, wooden dragon TACO fire, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 15, l: "TL", w: "TELA", s: "Una TELA de araña láser atrapando un sol en miniatura.", p: "3D isometric memory card style, laser spider TELA sun, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 16, l: "TZ", w: "TAZA", s: "Una TAZA de la que sale café con tiburones hambrientos.", p: "3D isometric memory card style, coffee TAZA sharks, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 17, l: "TF", w: "TUFO", s: "Un TUFO gas verde de unas zapatillas deportivas que desmayan a una familia y sus mascotas .", p: "3D isometric memory card style, green TUFO gas sneakers, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 18, l: "TCH", w: "TECHO", s: "Un TECHO de la capilla sixtina que secuestran a los visitantes.", p: "3D isometric memory card style, chapel TECHO kidnapping, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 19, l: "TP", w: "TAPA", s: "Una TAPA de alcantarilla escupida por un choros de agua, encima un ninja.", p: "3D isometric memory card style, manhole TAPA water ninja, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 20, l: "NR", w: "NORIA", s: "Una NORIA donde las cabinas son cabezas de león rugiendo.", p: "3D isometric memory card style, lion head NORIA, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 21, l: "ND", w: "NIDO", s: "Un NIDO de huevos de oro que emiten rayos eléctricos.", p: "3D isometric memory card style, golden NIDO eggs lightning, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 22, l: "NÑ", w: "NIÑA", s: "Una NIÑA con ojos de fuego levantando un portaaviones.", p: "3D isometric memory card style, fire eye NIÑA aircraft carrier, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 23, l: "NM", w: "NEMO", s: "NEMO el pez payaso de la pelicula nemo haciendo futing con tiburones mafiosos.", p: "3D isometric memory card style, NEMO fish shark joggers, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 24, l: "NC", w: "NUCA", s: "Una NUCA humana recibiendo la colleja del siglo.", p: "3D isometric memory card style, slap on human NUCA, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 25, l: "NL", w: "NILO", s: "El río NILO lleno de pirámides flotantes con Cleopatra.", p: "3D isometric memory card style, NILO river pyramids, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 26, l: "NS", w: "NASA", s: "Un astronauta de la NASA comiendo una hamburguesa gigante en Marte con alienigenas.", p: "3D isometric memory card style, NASA astronaut mars burger, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 27, l: "NF", w: "INFO", s: "Una mujer de info turistica muy agresiva dandole tripticos a la gente, estimo mortadelo y filemon.", p: "3D isometric memory card style, aggressive INFO woman comic, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 28, l: "NCH", w: "NICHO", s: "Un NICHO de un cementerio rompiendose la losa sale una mujer cadaverica sacudiendose el polvo.", p: "3D isometric memory card style, cementery NICHO dusty woman, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 29, l: "NB", w: "NIEVE", s: "Una tormenta de NIEVE impresionante, todo el mundo huye y un oso polar en su amaca con sus gafas de sol disfrutando como si estuviera en la playa.", p: "3D isometric memory card style, polar bear NIEVE storm, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 30, l: "MR", w: "MAR", s: "Un MAR de mercurio con delfines de cristal transparente.", p: "3D isometric memory card style, mercury MAR glass dolphins, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 31, l: "MT", w: "MOTO", s: "Una MOTO choper quemando ruedas en el asfalto soltando un humo de rayos.", p: "3D isometric memory card style, lightning smoke MOTO, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 32, l: "MN", w: "MINA", s: "Una MINA de carbon a cielo abierto con explosiones tnt brutales.", p: "3D isometric memory card style, carbon MINA TNT explosions, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 33, l: "MM", w: "MAMA", s: "Una MAMA osa con mandil disparando una ametralladora.", p: "3D isometric memory card style, apron MAMA bear gun, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 34, l: "MC", w: "MOCO", s: "Un MOCO gigante y viscoso atrapando un escuadrón de policía.", p: "3D isometric memory card style, giant green MOCO slime, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 35, l: "ML", w: "MULA", s: "Una MULA con alas de murciélago cargando lingotes.", p: "3D isometric memory card style, bat wing MULA gold, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 36, l: "MS", w: "MESA", s: "Una MESA de quirófano donde cirujanos gatos operan a un alien.", p: "3D isometric memory card style, cat surgeons operating MESA, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 37, l: "MF", w: "MAFIA", s: "Un gánster de la MAFIA perro fumando un puro que lanza rayos láser.", p: "3D isometric memory card style, MAFIA dog gangster laser, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 38, l: "MCH", w: "MECHA", s: "Una MECHA infinita que recorre toda una ciudad de neón.", p: "3D isometric memory card style, neon city MECHA fuse, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 39, l: "MP", w: "MAPA", s: "Un MAPA holográfico que sale de una brújula antigua de oro.", p: "3D isometric memory card style, holographic MAPA compass, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 40, l: "CR", w: "CURA", s: "Un CURA haciendo exorcismo a un coche deportivo poseído.", p: "3D isometric memory card style, CURA exorcism sports car, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 41, l: "CT", w: "KATA", s: "Un samurái haciendo una KATA de kárate contra sombras.", p: "3D isometric memory card style, samurai karate KATA shadows, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 42, l: "CN", w: "CAÑA", s: "Una CAÑA de pescar gigante pesca politicos corruptos.", p: "3D isometric memory card style, giant CAÑA fishing rod, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 43, l: "CM", w: "CAMA", s: "Una CAMA con dientes afilados que se come a quien duerme.", p: "3D isometric memory card style, sharp teeth CAMA monster, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 44, l: "CC", w: "COCO", s: "Un COCO peludo persigue un rebaño de ovejas de cristal.", p: "3D isometric memory card style, furry COCO glass sheep, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 45, l: "CL", w: "CAL", s: "Un saco de CAL que explota y convierte todo un pueblo en blanco.", p: "3D isometric memory card style, CAL powder explosion, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 46, l: "CS", w: "CASA", s: "Una CASA con patas de araña caminando por el desierto.", p: "3D isometric memory card style, spider leg CASA desert, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 47, l: "CF", w: "CAFE", s: "Taza de CAFE hirviendo que se convierte en un volcán.", p: "3D isometric memory card style, volcano CAFE cup, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 48, l: "CCH", w: "COCHE", s: "Un COCHE de carreras hecho de diamantes.", p: "3D isometric memory card style, diamond racing COCHE, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 49, l: "CB", w: "CAPA", s: "Una CAPA de superman se rompr volando y cae en el jardin de un villano esqueletico.", p: "3D isometric memory card style, superman torn CAPA garden, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 50, l: "LR", w: "LORO", s: "Un LORO pirata disparando un cañón de confeti brillante.", p: "3D isometric memory card style, pirate LORO confetti, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 51, l: "LT", w: "LATA", s: "Una LATA de la que sale una galaxia espiral completa.", p: "3D isometric memory card style, spiral galaxy LATA, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 52, l: "LN", w: "LUNA", s: "La LUNA surfeando en los anillos de Saturno.", p: "3D isometric memory card style, LUNA surfing saturn, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 53, l: "LM", w: "LIMA", s: "Una LIMA de metal afilando la lengua de un monstruo.", p: "3D isometric memory card style, metal LIMA monster tongue, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 54, l: "LC", w: "LACA", s: "Un spray de LACA que congela a la gente en oro macizo.", p: "3D isometric memory card style, gold LACA spray freeze, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 55, l: "LL", w: "LEAL", s: "Un perro LEAL gigante con armadura protegiendo un castillo.", p: "3D isometric memory card style, armored LEAL dog castle, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 56, l: "LS", w: "LAZO", s: "Un LAZO vaquero hecho de electricidad atrapando a un rayo.", p: "3D isometric memory card style, electric LAZO catching lightning, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 57, l: "LF", w: "ALFA", s: "Un lobo ALFA aullando frente a un portal dimensional.", p: "3D isometric memory card style, howling ALFA wolf portal, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 58, l: "LCH", w: "LECHE", s: "Una catarata de LECHE alimentando flores robóticas.", p: "3D isometric memory card style, LECHE waterfall robot flower, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 59, l: "LB", w: "LOBO", s: "Un LOBO con piel de oveja pero ojos de láser rojo.", p: "3D isometric memory card style, sheep LOBO laser eyes, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 60, l: "SR", w: "SOR", s: "Una monja (SOR) con patines y una guitarra eléctrica llameante.", p: "3D isometric memory card style, skating SOR guitar fire, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 61, l: "ST", w: "SETA", s: "Una SETA de la que sale un hongo atómico de purpurina.", p: "3D isometric memory card style, atomic mushroom SETA glitter, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 62, l: "SN", w: "SENA", s: "El río SENA con el agua convertida en vino tinto brillante al lado de la torre Eiffel.", p: "3D isometric memory card style, red wine SENA river Eiffel, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 63, l: "SM", w: "SUMA", s: "Un signo de SUMA gigante hecho de lingotes de oro aplastando a la resta y a la raiz cuadrada.", p: "3D isometric memory card style, gold bar SUMA crushing, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 64, l: "SC", w: "SACA", s: "Una SACA llena de llenas de mafiosos en un autobus policial.", p: "3D isometric memory card style, gangster SACA police bus, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 65, l: "SL", w: "SOL", s: "El SOL con gafas de sol surfeando en una ola de fuego.", p: "3D isometric memory card style, surfing SOL fire wave, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 66, l: "SS", w: "SESO", s: "Un SESO gigante en un frasco de cristal con ojos.", p: "3D isometric memory card style, SESO in glass jar eyes, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 67, l: "SF", w: "SOFA", s: "Un SOFA que es una boca gigante de peluche rojo.", p: "3D isometric memory card style, red mouth SOFA furniture, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 68, l: "SCH", w: "SOGA", s: "Una SOGA que se convierte en una serpiente boa constrictora.", p: "3D isometric memory card style, SOGA rope snake transformation, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 69, l: "SB", w: "SAPO", s: "Un SAPO con corona sentado en un trono de moscas.", p: "3D isometric memory card style, king SAPO fly throne, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 70, l: "FR", w: "FARO", s: "Un FARO proyectando luz que solidifica el agua del mar.", p: "3D isometric memory card style, FARO lighthouse solid sea, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 71, l: "FT", w: "FOTO", s: "Una FOTO antigua de la que sale un fantasma en 3D.", p: "3D isometric memory card style, old FOTO ghost 3D, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 72, l: "FN", w: "FAN", s: "Un FAN con mil manos aplaudiendo a un alienígena rockero.", p: "3D isometric memory card style, many hand FAN alien rock, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 73, l: "FM", w: "FAMA", s: "La FAMA de un rockero en la alfombra roja que se convierte en una cobra gigante.", p: "3D isometric memory card style, cobra red carpet FAMA, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 74, l: "FC", w: "FOCA", s: "Una FOCA con un monóculo abofeteando al direstor del banco muy enfadada.", p: "3D isometric memory card style, angry monocle FOCA slap, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 75, l: "FL", w: "FILO", s: "El FILO de una espada cortando un átomo provocando luz.", p: "3D isometric memory card style, sharp FILO splitting atom, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 76, l: "FS", w: "FOSO", s: "Un FOSO lleno de cocodrilos con armadura y ametralladoras.", p: "3D isometric memory card style, armored crocodiles FOSO pit, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 77, l: "FF", w: "FOFO", s: "Un payaso FOFO se sube a su bicicleta y la aplasta como una prensa hidraulica.", p: "3D isometric memory card style, chubby clown FOFO crush bike, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 78, l: "FCH", w: "FICHA", s: "Una FICHA de dominó gigante derribando la estatua de la Libertad.", p: "3D isometric memory card style, giant FICHA domino liberty, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 79, l: "FB", w: "FOBIA", s: "Una araña gigante (FOBIA) con mil ojos humanos.", p: "3D isometric memory card style, spider FOBIA human eyes, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 80, l: "CHR", w: "GRUA", s: "Una GRUA que levanta la gran pirámide como si fuera cartón.", p: "3D isometric memory card style, GRUA crane pyramid cardboard, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 81, l: "CHT", w: "CHITA", s: "Una mona CHITA conduciendo un coche de carreras.", p: "3D isometric memory card style, monkey CHITA race car, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 82, l: "CHN", w: "CHINA", s: "Una mujer CHINA bailando con abanicos de fuego real.", p: "3D isometric memory card style, CHINA woman fire fans, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 83, l: "GM", w: "GAMO", s: "Un GAMO totalmente enmorado de un unicornio que le rechaza.", p: "3D isometric memory card style, unicorn GAMO forest, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 84, l: "CHC", w: "CHICA", s: "Una CHICA de cristal con un corazón de rubí.", p: "3D isometric memory card style, crystal CHICA ruby heart, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 85, l: "CHL", w: "CHULO", s: "Un tipo CHULO con gafas que reflejan el fin del mundo.", p: "3D isometric memory card style, cool CHULO guy swagger, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 86, l: "CHS", w: "CHAS", s: "Un chasquido CHAS provocando explosión de nieve.", p: "3D isometric memory card style, CHAS finger snap snow, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 87, l: "CHF", w: "CHUFA", s: "Un campo de CHUFA donde crecen botellas de horchata.", p: "3D isometric memory card style, CHUFA field horchata bottles, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 88, l: "CHCH", w: "CHUCHO", s: "Un perro CHUCHO con tres cabezas escupiendo confeti.", p: "3D isometric memory card style, three-headed mutt CHUCHO, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 89, l: "CHB", w: "CHUPA", s: "Un CHUPA-chups del tamaño de un edificio lamido por un gigante.", p: "3D isometric memory card style, giant skyscraper CHUPA-chups, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 90, l: "BR/PR", w: "BAR", s: "Un BAR en el fondo del mar donde los camareros son pulpos.", p: "3D isometric memory card style, underwater octopus BAR, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 91, l: "BT", w: "BATA", s: "Una BATA científica mezclando pociones mágicas sola.", p: "3D isometric memory card style, ghostly scientific BATA coat, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 92, l: "VN", w: "VINO", s: "Una botella de VINO baila borracha con una mujer policia que le esposa por conducir.", p: "3D isometric memory card style, drunk VINO bottle police, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 93, l: "PM", w: "PUMA", s: "Un PUMA de jade acechando en la selva neón.", p: "3D isometric memory card style, jade PUMA neon jungle, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 94, l: "VC", w: "VACA", s: "Una VACA volando en el avion del baron rojo disparando corazones y gafas de aviador.", p: "3D isometric memory card style, cow VACA pilot plane, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 95, l: "VL", w: "VELA", s: "Una VELA que quema oscuridad y emite sombras brillantes.", p: "3D isometric memory card style, mystical VELA candle shadows, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 96, l: "VS", w: "VASO", s: "Un VASO de cristal que bebe arena del mar.", p: "3D isometric memory card style, thirsty crystal VASO sand, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 97, l: "VF", w: "PUFO", s: "Fajos de billetes (PUFO) que se vuelven cucarachas al tocarlos.", p: "3D isometric memory card style, money PUFO cockroach scam, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 98, l: "BCH", w: "BACHE", s: "Un BACHE en la carretera portal a otra galaxia lejana.", p: "3D isometric memory card style, urban pothole BACHE portal, simple background, web-optimized lightweight JPG, fast loading." },
+            { n: 99, l: "PP", w: "PAPA", s: "El PAPA bailando breakdance en el Vaticano con túnica arcoíris.", p: "3D isometric memory card style, breakdancing PAPA vatican, simple background, web-optimized lightweight JPG, fast loading." }
         ];
 
         const App = () => {
@@ -197,7 +197,7 @@
                 el.select();
                 document.execCommand('copy');
                 document.body.removeChild(el);
-                setStatus(`📋 Prompt en Inglés copiado para tu IA`);
+                setStatus(`📋 Prompt optimizado (JPG Ligero) copiado`);
                 setTimeout(() => setStatus(""), 2000);
             };
 
@@ -209,7 +209,7 @@
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mnemonic_images', n.toString()), {
                         url: url, timestamp: Date.now()
                     });
-                    setStatus(`✅ Imagen guardada en el #${n}`);
+                    setStatus(`✅ Imagen ligera guardada en el #${n}`);
                     setManualLink(prev => ({...prev, [n]: ""}));
                 } catch (e) {
                     setStatus("❌ Error al guardar link");
@@ -242,7 +242,7 @@
                             </button>
                             <div>
                                 <h1 className="text-xl font-black uppercase tracking-tighter text-white">Bohemio Academy</h1>
-                                <p className="text-[9px] font-bold text-indigo-400 tracking-[0.3em] uppercase">Investigación Kenny - Mnemotecnia</p>
+                                <p className="text-[9px] font-bold text-indigo-400 tracking-[0.3em] uppercase">Optimizado para Fluidez • Kenny</p>
                             </div>
                         </div>
                         <nav className="flex gap-2 bg-slate-900 p-1 rounded-xl">
@@ -276,14 +276,17 @@
                                                 }
                                                 {isMaster && (
                                                     <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-sm p-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity justify-center text-center">
-                                                        <button onClick={() => copyPrompt(item.p)} className="text-[8px] font-black uppercase bg-indigo-600 py-2 rounded-lg text-white">1. Copiar Prompt Inglés</button>
-                                                        <input 
-                                                            type="text" 
-                                                            placeholder="Link Coppermine..." 
-                                                            className="bg-black text-[9px] p-2 rounded-lg text-indigo-300 outline-none border border-indigo-500/30"
-                                                            value={manualLink[item.n] || ""}
-                                                            onChange={(e) => setManualLink({...manualLink, [item.n]: e.target.value})}
-                                                        />
+                                                        <button onClick={() => copyPrompt(item.p)} className="text-[8px] font-black uppercase bg-indigo-600 py-2 rounded-lg text-white">1. Copiar Prompt Optimizado</button>
+                                                        <div className="flex flex-col gap-1">
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Link Coppermine..." 
+                                                                className="bg-black text-[9px] p-2 rounded-lg text-indigo-300 outline-none border border-indigo-500/30"
+                                                                value={manualLink[item.n] || ""}
+                                                                onChange={(e) => setManualLink({...manualLink, [item.n]: e.target.value})}
+                                                            />
+                                                            <p className="text-[7px] text-indigo-400 uppercase font-bold italic">¡Sube JPGs ligeros!</p>
+                                                        </div>
                                                         <button onClick={() => saveUrl(item.n, manualLink[item.n])} className="text-[8px] font-black uppercase bg-emerald-600 py-2 rounded-lg text-white">2. Guardar Link</button>
                                                     </div>
                                                 )}
@@ -331,7 +334,7 @@
                     </main>
 
                     <footer className="p-8 text-center opacity-20">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white">Kenny Investigador • Almacén en gallery.bohemio.ws</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white">Kenny Investigador • Almacén Optimizado en gallery.bohemio.ws</p>
                     </footer>
                 </div>
             );
