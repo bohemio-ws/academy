@@ -270,7 +270,20 @@
                     )}
 
                     <main className="flex-grow max-w-6xl mx-auto w-full p-6">
-                        {view === 'gallery' ? (
+                        {view === 'learn' ? (
+<section className="space-y-6" aria-label="Curso de memoria">
+<div className="rounded-3xl border border-amber-400/30 bg-slate-800/70 p-7"><p className="text-amber-300 font-bold">CURSO GUIADO · NIVEL INICIAL</p><h2 className="font-serif text-3xl text-white mt-3">Aprender a recordar</h2><p className="text-slate-100 mt-4">La asociación visual convierte un dato abstracto en una escena fácil de reconstruir. Imagina acciones exageradas, movimiento y sorpresa. Después recupera la imagen sin mirar.</p></div>
+{[
+['1. El casillero numérico','Cada número conserva una palabra fija. En nuestro casillero: 0 = ARO, 1 = HADA, 2 = NOÉ. No cambies esas equivalencias.','Abre Biblioteca y estudia las diez primeras correspondencias.'],
+['2. La asociación inverosímil','Haz que el objeto sea enorme y realice algo físicamente imposible. Mantén una acción principal y evita detalles que distraigan.','Para 0 imagina un ARO gigantesco de fuego que lanza relámpagos. Cierra los ojos y vuelve a verlo.'],
+['3. La escena como pista','Relaciona la palabra con una acción intensa y concreta. Reconstruye la escena mental antes de leer la descripción.','Para 3 = HUMO imagina una retroexcavadora averiada que expulsa humo de todos los colores.'],
+['4. Recuperación activa','Recordar exige intentarlo antes de revelar la respuesta. Un fallo sirve para identificar qué asociación necesita refuerzo.','En Entrenar, escribe la palabra asociada al número y pulsa Comprobar.'],
+['5. Repaso por bloques','Domina los números 0–9 antes de ampliar a 10–19. Mezcla las tarjetas y vuelve a las que no recuerdes.','Repasa diez asociaciones, descansa y vuelve a comprobarlas sin consultar la biblioteca.']
+].map(([title,concept,exercise])=><article key={title} className="rounded-2xl bg-slate-800/70 border border-white/10 p-6"><h3 className="text-xl font-serif text-amber-200">{title}</h3><p className="text-slate-100 mt-3">{concept}</p><p className="text-amber-100 text-sm mt-3"><strong>Ejercicio:</strong> {exercise}</p></article>)}
+<button onClick={()=>{setActiveBlock(0);setView('gallery')}} className="rounded-xl bg-amber-700 text-white font-black px-6 py-4">EMPEZAR CON 0–9 →</button>
+<p className="text-xs text-slate-400">Actividades originales inspiradas en las técnicas de casilleros y asociación visual. No es un curso oficial ni una reproducción del libro de Ramón Campayo.</p>
+</section>
+) : view === 'gallery' ? (
                             <div className="space-y-8">
                                 <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar snap-x">
                                     {blocks.map((b, i) => (
@@ -334,6 +347,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div className="mt-5 rounded-2xl bg-slate-800 p-4 border border-amber-500/30"><label htmlFor="recall-answer" className="block text-sm text-amber-200 mb-2">¿Qué palabra corresponde al número {DATABASE[testIdx]?.n}?</label><input id="recall-answer" autoComplete="off" value={recallAnswer} onChange={e=>setRecallAnswer(e.target.value)} className="w-full rounded-lg bg-slate-950 text-white border border-slate-500 p-3" placeholder="Escribe la palabra sin mirar" /><button disabled={!recallAnswer.trim() || recallResult!==null} onClick={()=>{const ok=cleanRecall(recallAnswer)===cleanRecall(DATABASE[testIdx]?.w);setRecallResult(ok);setAttempts(a=>a+1);if(ok)setCorrect(c=>c+1);setFlipped(true)}} className="mt-3 px-5 py-3 bg-amber-700 disabled:opacity-40 text-white font-black rounded-lg">COMPROBAR</button>{recallResult!==null && <p role="status" className="mt-3 text-white">{recallResult?'✓ Correcto. Reconstruye la escena.':`Respuesta: ${DATABASE[testIdx]?.w}. Repasa la escena y vuelve a intentarlo después.`}</p>}<p className="mt-3 text-xs text-slate-300">Aciertos de esta sesión: {correct} / {attempts}</p></div>
                                 {flipped && (
                                     <button 
                                         onClick={() => { setFlipped(false); setRecallAnswer(''); setRecallResult(null); setTestIdx(Math.floor(Math.random()*DATABASE.length)); }} 
