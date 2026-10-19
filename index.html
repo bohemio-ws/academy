@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bohemio Academy - Almacén Coppermine</title>
+    <title>Bohemio Academy · Memoria y crecimiento personal</title>
+    <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/bohemio-ws/RTC/main/logo-bohemio.jpg">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/bohemio-ws/RTC/main/logo-bohemio.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -25,6 +27,7 @@
         }
         .master-active { animation: pulse-border 2s infinite; border-width: 2px; }
     </style>
+    <link rel="stylesheet" href="mind-theme.css?v=1">
 </head>
 <body>
     <div id="root"></div>
@@ -231,7 +234,7 @@
 
             return (
                 <div className="min-h-screen flex flex-col">
-                    <header className="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-2xl">
+                    <header className="glass mind-header sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-2xl">
                         <div className="flex items-center gap-4">
                             <button 
                                 onClick={() => setIsMaster(!isMaster)}
@@ -241,8 +244,8 @@
                                 <LucideIcon name="brain-circuit" className="w-6 h-6 text-white" />
                             </button>
                             <div>
-                                <h1 className="text-xl font-black uppercase tracking-tighter text-white">Bohemio Academy</h1>
-                                <p className="text-[9px] font-bold text-indigo-400 tracking-[0.3em] uppercase">Optimizado para Fluidez • Kenny</p>
+                                <h1 className="mind-title text-xl font-black tracking-tighter text-white">Bohemio Academy</h1>
+                                <p className="mind-subtitle text-[9px] font-bold uppercase">Memoria · Aprendizaje · Crecimiento personal</p>
                             </div>
                         </div>
                         <nav className="flex gap-2 bg-slate-900 p-1 rounded-xl">
@@ -334,7 +337,7 @@
                     </main>
 
                     <footer className="p-8 text-center opacity-20">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-white">Kenny Investigador • Almacén Optimizado en gallery.bohemio.ws</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-white">Bohemio 4 Infinity · El conocimiento crece cuando se comparte</p>
                     </footer>
                 </div>
             );
