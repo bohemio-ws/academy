@@ -1,0 +1,21 @@
+/* Identidad compartida Bohemio 4 Infinity — Academia de la Memoria */
+:root{--mind-navy:#182c3a;--mind-paper:#f1e8d6;--mind-copper:#ba8d54;--mind-ink:#f9f2e6}
+body{background:radial-gradient(circle at 50% -10%,#304e56 0%,#172a36 48%,#101f2b 100%);color:#f5ecdc}
+.glass{background:rgba(23,41,52,.96);border-bottom:3px solid var(--mind-copper);box-shadow:0 5px 24px #050e1680}
+.mind-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mind-brand-logo{width:57px;height:57px;object-fit:contain;flex:none;background:#fff4dd;border:2px solid #bc965d;border-radius:10px;padding:4px;box-shadow:0 2px 12px #0005}
+.mind-title{font-family:Georgia,'Times New Roman',serif;letter-spacing:.015em;text-transform:none}
+.mind-subtitle{color:#dfc498;letter-spacing:.12em}
+.mind-header{gap:14px;flex-wrap:wrap}
+.mind-header nav{background:#243d4b;border:1px solid #977b57}
+.mind-header nav button{min-height:44px;font-size:12px}
+.mind-header nav button.bg-indigo-600{background:#a16d3b!important;color:#fff9ed!important}
+.mind-header nav button.text-slate-500{color:#e4d5bd!important}
+.mind-header button.bg-indigo-600{background:#a16d3b!important}
+main .bg-indigo-600{background:#a16d3b!important}
+main .text-indigo-400,main .text-indigo-500{color:#e7bc81!important}
+main .border-indigo-500{border-color:#b98c53!important}
+main .bg-slate-800,main .bg-slate-900{background-color:#243b47!important}
+main .text-slate-500{color:#c1c8c9!important}
+button:focus-visible,input:focus-visible{outline:3px solid #e7b770;outline-offset:3px}
+@media(max-width:600px){.mind-header{padding:12px!important;justify-content:center}.mind-brand{width:100%;justify-content:center}.mind-header nav{width:100%;justify-content:center}.mind-brand-logo{width:48px;height:48px}.mind-title{font-size:19px}.mind-subtitle{font-size:9px;letter-spacing:.04em}}
